@@ -3,31 +3,23 @@ package controller;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
 import model.Appointment;
 import model.Customer;
 import model.MainSchedulingApp;
-import model.User;
 
 public class AppointmentViewController implements Initializable {
     @FXML
@@ -107,7 +99,6 @@ public class AppointmentViewController implements Initializable {
         createTimeArray();
         createCustomerArray();   
     }  
-    
     public void createTimeArray(){
         ObservableList<LocalTime> options = FXCollections.observableArrayList();
         
@@ -151,7 +142,6 @@ public class AppointmentViewController implements Initializable {
     
        customerField.setItems(customers);
     }
-    
     public void editAppt(Appointment appointments){
         System.out.println(appointments.getType());
         edited = true;
@@ -166,6 +156,10 @@ public class AppointmentViewController implements Initializable {
     }
     public void addAppt(LocalDate date){
         dateField.setValue(date);
+    }
+    public void addAppt(LocalDate date,LocalTime time){
+        dateField.setValue(date);
+        timeField.setValue(time);
     }
     
 }

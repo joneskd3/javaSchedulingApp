@@ -44,14 +44,15 @@ public class AppointmentListController implements Initializable {
         System.out.println(sendDate.toString());
         
         ArrayList<Appointment> appointmentToday = new ArrayList<>();
+        main.calendarArray.sortAppointments();
         for (Appointment appointment:main.calendarArray.getAppointments()){
             if (appointment.getTime().toLocalDate().equals(sendDate.toLocalDate())){
                 
                 appointmentToday.add(appointment);
             }
         } 
-        Collections.sort(appointmentToday, 
-                        (appt1, appt2) -> appt1.getTime().compareTo(appt2.getTime()));
+        /*Collections.sort(appointmentToday, 
+                        (appt1, appt2) -> appt1.getTime().compareTo(appt2.getTime()));*/
             
         for (Appointment appointments: appointmentToday){    
             
@@ -60,6 +61,8 @@ public class AppointmentListController implements Initializable {
                 
                 Label apptLabel = new Label(labelText);
                 apptLabel.getStyleClass().add("eventLbl");
+                apptLabel.setMaxWidth(Double.MAX_VALUE);
+
 
                 apptList.getChildren().add(apptLabel);
 
