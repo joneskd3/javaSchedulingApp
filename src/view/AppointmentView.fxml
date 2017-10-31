@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="signInView" prefHeight="353.0" prefWidth="400.0" style="-fx-background-color: FFFFFF;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AppointmentViewController">
+   <children>
+      <GridPane prefHeight="455.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="152.0" minWidth="10.0" prefWidth="77.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="251.0" minWidth="10.0" prefWidth="243.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="43.0" minHeight="8.0" prefHeight="29.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="87.0" minHeight="10.0" prefHeight="41.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="76.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="75.0" minHeight="10.0" prefHeight="49.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="89.0" minHeight="10.0" prefHeight="43.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="57.0" minHeight="10.0" prefHeight="52.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="60.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label fx:id="appointmentLabel" text="Add Appointment" GridPane.columnSpan="2">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets bottom="20.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="usernameLabel2" text="Date" textFill="#4285f4" GridPane.rowIndex="1" />
+            <Label fx:id="usernameLabel1" text="Time" textFill="#4285f4" GridPane.rowIndex="2" />
+            <Label fx:id="usernameLabel" text="Appt Type" textFill="#4285f4" GridPane.rowIndex="3" />
+            <TextField fx:id="typeField" GridPane.columnIndex="1" GridPane.rowIndex="3">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </TextField>
+            <Label fx:id="passwordLabel" text="Customer" textFill="#4285f4" GridPane.rowIndex="4" />
+            <HBox prefHeight="100.0" prefWidth="200.0" />
+            <DatePicker fx:id="dateField" prefHeight="31.0" prefWidth="243.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ComboBox fx:id="timeField" prefHeight="33.0" prefWidth="243.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <ComboBox fx:id="customerField" prefHeight="34.0" prefWidth="245.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Button fx:id="saveBtn1" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSave" prefHeight="35.0" prefWidth="50.0" styleClass="saveBtn" text="Save" textFill="WHITE" GridPane.columnSpan="2" GridPane.rowIndex="6">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+            </Button>
+            <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+               <children>
+                  <Button fx:id="addCustomerBtn" mnemonicParsing="false" onAction="#handleAddCustomer" styleClass="minorButton" text="Add Customer">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="modifyCustomerBtn" mnemonicParsing="false" onAction="#handleModifyCustomer" styleClass="minorButton" text="Modify Customer" />
+               </children>
+               <GridPane.margin>
+                  <Insets top="5.0" />
+               </GridPane.margin>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+         </padding>
+      </GridPane>
+      <Button fx:id="deleteBtn" layoutX="344.0" layoutY="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDelete" prefHeight="27.0" prefWidth="69.0" styleClass="deleteBtn" text="Delete" textFill="#ff0404" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>

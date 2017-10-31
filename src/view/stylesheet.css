@@ -1,0 +1,76 @@
+.root{
+  -fx-font-family: arial;  
+  -fx-background-color: #FFF;
+}
+.label{
+    -fx-padding: 5px;
+    -fx-border-color: #ddd;
+    -fx-border-width: 0 0 0 0;
+}
+.labelLast{
+    /* -fx-border-width: 0 1 1 1; */
+}
+.dayBox {
+    /* -fx-border-color: #ddd; */
+    /* -fx-border-width: 0 0 1 1; */
+}
+.dayBoxLast {
+    /* -fx-border-color: #ddd; */
+    /* -fx-border-width: 0 1 1 1; */
+}
+.dayOfWeek{
+    -fx-font-weight: bold;
+    -fx-border-width: 0 0 0 0; 
+
+}
+.mainLabel{
+    -fx-border-width: 0;
+    -fx-padding: 0 0 25 0;
+}
+.button{
+    -fx-font-size: 14;
+    -fx-font-color: 000;
+
+    -fx-background-color: #ddd;
+}
+.button:hover{
+    -fx-background-color: #eee;
+}
+.currentRange{
+    -fx-border-width: 0;
+    -fx-font-size: 18;
+    -fx-padding: 0 0 0 25;
+}
+.eventLbl{
+    -fx-border-width: 1 1 1 1;
+    -fx-background-color: lightsalmon;
+
+    
+}
+.day{
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: #ddd;
+    -fx-background-color:#ddd
+}
+
+.deleteBtn{
+    -fx-background-color:FFF;
+}
+.deleteBtn:hover{
+    -fx-font-weight: bold;
+    -fx-background-color:FFF;
+  
+}
+.saveBtn{
+    -fx-background-color:#4285f4;
+}
+.saveBtn:hover{
+    -fx-background-color:#3174e3;
+}
+.timeSlot{
+    -fx-border-width: 0 0 1 1;
+    -fx-border-color: ddd;
+}
+.dateBox{
+    -fx-border-width:0;
+}
