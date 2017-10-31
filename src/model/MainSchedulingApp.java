@@ -10,6 +10,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -24,9 +25,10 @@ import javafx.stage.Stage;
 
 public class MainSchedulingApp extends Application {
     /* Variables */
-    private static Connection connection;
+    //private static Connection connection;
     public static Calendar calendarArray;
     public static LocalDate currentViewDate = LocalDate.now();
+    
     
     
     @Override
@@ -37,9 +39,17 @@ public class MainSchedulingApp extends Application {
         stage.setTitle("Login");
         stage.show();
     }
-    public static void main(String[] args) throws ClassNotFoundException {
-        //startNewConnection();
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        Database.startNewConnection();
+        Database.createAppointmentTable();
+        
+        String query = "INSERT INTO APPOINTMENTS (appointmentID) VALUES (283)";
+        Database.insertValues("APPOINTMENTS", query);
+        Database.printQuery();
+        setFrenchLocale();
+        //setEnglishLocale();
         populateTestCalendar();
+        createTestUsers();
         launch(args);
         
     }
@@ -73,7 +83,7 @@ public class MainSchedulingApp extends Application {
         popUp.show(); 
     }
     /* SQL Methods */
-    public static void startNewConnection() throws ClassNotFoundException{
+    /*public static void startNewConnection() throws ClassNotFoundException{
         connection = null;
         String driver   = "com.mysql.jdbc.Driver";
         String db       = "U04RGT";
@@ -89,7 +99,7 @@ public class MainSchedulingApp extends Application {
             System.out.println("SQLState: "+e.getSQLState());
             System.out.println("VendorError: "+e.getErrorCode());
         }
-    }
+    } 
     public static void createNewTable(){
         
     }
@@ -127,7 +137,7 @@ public class MainSchedulingApp extends Application {
          if (connection != null)
            connection.close();
        } catch (SQLException e) { }
-    }
+    }*/
     public static LocalDate getToday(){
         LocalDate today = LocalDate.now();
         //LocalDate weekStart = today.minusDays(today.getDayOfWeek().getValue() - 1);
@@ -154,4 +164,27 @@ public class MainSchedulingApp extends Application {
         calendarArray.addAppointment(appt2);
         calendarArray.addAppointment(appt3);
     }
+    public static void setFrenchLocale(){
+        Locale.setDefault(Locale.FRENCH);
+    }
+    public static void setEnglishLocale(){
+        Locale.setDefault(Locale.ENGLISH);
+    }
+    public static void createTestUsers(){
+        User testUser = new User("test","test",true,null,null,null,null);
+        System.out.println(testUser.getUserName());
+
+    }
+    
+    /*public static checkExistence(){
+        DatabaseMetaData dbm = con.getMetaData();
+        // check if "employee" table is there
+        ResultSet tables = dbm.getTables(null, null, "employee", null);
+        if (tables.next()) {
+          // Table exists
+        }
+        else {
+          // Table does not exist
+        }
+    }*/
 }
