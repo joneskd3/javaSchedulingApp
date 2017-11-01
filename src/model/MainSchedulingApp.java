@@ -29,6 +29,12 @@ public class MainSchedulingApp extends Application {
     public static Calendar calendarArray;
     public static LocalDate currentViewDate = LocalDate.now();
     
+    //TEST DATA
+    
+    static Appointment  appt1;
+    static Appointment  appt2;
+    static Appointment  appt3;
+    
     
     
     @Override
@@ -42,13 +48,20 @@ public class MainSchedulingApp extends Application {
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         Database.startNewConnection();
         Database.createAppointmentTable();
+        populateTestCalendar();
+
         
-        String query = "INSERT INTO APPOINTMENTS (appointmentID) VALUES (283)";
-        Database.insertValues("APPOINTMENTS", query);
-        Database.printQuery();
+        String insertQuery = "INSERT INTO APPOINTMENTS (appointmentId) VALUES (500)";
+        //Database.actionQuery(insertQuery);
+        String printQuery = "SELECT * FROM APPOINTMENTS";
+        Database.printQuery(printQuery);
+        
+        appt1.setType("MORE TEST");
+        Database.printQuery(printQuery);
+
+        
         setFrenchLocale();
         //setEnglishLocale();
-        populateTestCalendar();
         createTestUsers();
         launch(args);
         
@@ -153,12 +166,12 @@ public class MainSchedulingApp extends Application {
             }
         return firstDayInt;
     }
-    public static void populateTestCalendar(){
+    public static void populateTestCalendar() throws SQLException{
         calendarArray = new Calendar();
         
-        Appointment appt1 = new Appointment(LocalDateTime.now().plusDays(1),"Event",null);
-        Appointment appt2 = new Appointment(LocalDateTime.now().plusDays(3),"Event",null);
-        Appointment appt3 = new Appointment(LocalDateTime.now().plusDays(5),"Event",null);
+         appt1 = new Appointment(LocalDateTime.now().plusDays(1),"TEST Event",null);
+         appt2 = new Appointment(LocalDateTime.now().plusDays(3),"event 3",null);
+         appt3 = new Appointment(LocalDateTime.now().plusDays(5),"event 39",null);
         
         calendarArray.addAppointment(appt1);
         calendarArray.addAppointment(appt2);

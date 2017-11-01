@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ResourceBundle;
@@ -55,7 +56,7 @@ public class AppointmentViewController implements Initializable {
     private boolean edited = false;
     
     @FXML
-    void handleSave(ActionEvent event) throws IOException {
+    void handleSave(ActionEvent event) throws IOException, SQLException {
         if (! edited){
         appointment = new Appointment();
         }
