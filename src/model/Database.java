@@ -313,7 +313,7 @@ public class Database {
         }
         System.out.println(results);
     }
-    private static void closeConnection(Connection connection) {
+    public static void closeConnection(Connection connection) {
        try {
          if (connection != null)
            connection.close();
@@ -326,4 +326,6 @@ public class Database {
         
         return results;
     }
+    
+    
 }

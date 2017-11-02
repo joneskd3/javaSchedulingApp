@@ -2,6 +2,8 @@ package controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +26,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Appointment;
 import model.Calendar;
+import model.Database;
 import model.MainSchedulingApp;
 
 public class CalendarMonthViewController implements Initializable {
@@ -42,6 +45,35 @@ public class CalendarMonthViewController implements Initializable {
     MainSchedulingApp main;
 
     //Label [][] gridLayout = new Label [5][7];
+    
+        @FXML
+    void apptByDayBtn(ActionEvent event) {
+
+    }
+
+    @FXML
+    void apptTypeByMonthBtn(ActionEvent event) throws SQLException, IOException {
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(null);
+        Scene main;
+       
+        FXMLLoader loader = new FXMLLoader();       
+        loader.setLocation(MainSchedulingApp.class.getResource("/view/AppointmentList.fxml"));
+        Parent root = (Parent) loader.load();
+        main = new Scene(root);
+        System.out.println(root);
+        AppointmentListController controller = loader.getController();
+        controller.reportTypeByMonth();
+        stage.setScene(main);
+        stage.showAndWait();  
+        refreshCalendar();  
+    }
+
+    @FXML
+    void consultantScheduleBtn(ActionEvent event) {
+
+    }
     @FXML
     void addAppointmentBtn(ActionEvent event) throws IOException {
         MainSchedulingApp.popUpScene(event,"/view/AppointmentView.fxml","Appointment");
@@ -146,19 +178,19 @@ public class CalendarMonthViewController implements Initializable {
     }
     public void populateEvents(){
         for (Appointment appointment : main.calendarArray.getAppointments()){
-            if (appointment.getTime().getYear() == main.currentViewDate.getYear()
-                && appointment.getTime().getMonthValue() == main.currentViewDate.getMonthValue()){
+            if (appointment.getStart().getYear() == main.currentViewDate.getYear()
+                && appointment.getStart().getMonthValue() == main.currentViewDate.getMonthValue()){
                 
                 //create appt label format
-                String labelText = (appointment.getTime().toLocalTime().format(DateTimeFormatter.ofPattern("hh:mm a"))
-                    + " - " + appointment.getType());
+                String labelText = (appointment.getStart().toLocalTime().format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    + " - " + appointment.getTitle());
                     //+ "\n" + appointment.getCustomer());
                 
                 Label apptLabel = new Label(labelText);
                 apptLabel.getStyleClass().add("eventLbl");
                 
                 //gets appointment day, adds offset for first day of month, subtract 1 to index on 0
-                int arrayPosition = appointment.getTime().getDayOfMonth() + getFirstDay() - 1;
+                int arrayPosition = appointment.getStart().getDayOfMonth() + getFirstDay() - 1;
                 
                 if(vBoxArray.get(arrayPosition).getChildren().size() < 2){
                     vBoxArray.get(arrayPosition).getChildren().add(apptLabel);
@@ -178,7 +210,7 @@ public class CalendarMonthViewController implements Initializable {
                     moreLabel.setMaxWidth(Double.MAX_VALUE);
                     moreLabel.addEventHandler(MouseEvent.MOUSE_PRESSED, (e)->{
                         try {
-                            listEvents(appointment.getTime());
+                            listEvents(appointment.getStart());
                         } catch (IOException ex) {
                             Logger.getLogger(CalendarMonthViewController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -204,8 +236,8 @@ public class CalendarMonthViewController implements Initializable {
         monthYearLabel.setText(month + " " + year);
     }
     public void editEvent(Appointment appointments) throws IOException{
-        System.out.println(appointments.getTime());
-        System.out.println(appointments.getType());
+        System.out.println(appointments.getStart());
+        System.out.println(appointments.getTitle());
         System.out.println(appointments.getCustomer());
         
         Stage stage = new Stage();
@@ -287,5 +319,6 @@ public class CalendarMonthViewController implements Initializable {
         }
         return firstDayOfWeek;
     }
+    
 }
     

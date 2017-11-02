@@ -6,6 +6,8 @@
 package controller;
 
 import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,8 +17,10 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import model.Appointment;
+import model.Database;
 import model.MainSchedulingApp;
 
 /**
@@ -28,7 +32,8 @@ public class AppointmentListController implements Initializable {
 
     @FXML
     private VBox apptList;
-    
+    @FXML
+    private Label mainLabel;
     
     MainSchedulingApp main;
     
@@ -46,7 +51,7 @@ public class AppointmentListController implements Initializable {
         ArrayList<Appointment> appointmentToday = new ArrayList<>();
         main.calendarArray.sortAppointments();
         for (Appointment appointment:main.calendarArray.getAppointments()){
-            if (appointment.getTime().toLocalDate().equals(sendDate.toLocalDate())){
+            if (appointment.getStart().toLocalDate().equals(sendDate.toLocalDate())){
                 
                 appointmentToday.add(appointment);
             }
@@ -56,8 +61,8 @@ public class AppointmentListController implements Initializable {
             
         for (Appointment appointments: appointmentToday){    
             
-            String labelText = (appointments.getTime().toLocalTime().format(DateTimeFormatter.ofPattern("hh:mm a"))
-                    + " - " + appointments.getType());
+            String labelText = (appointments.getStart().toLocalTime().format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    + " - " + appointments.getTitle());
                 
                 Label apptLabel = new Label(labelText);
                 apptLabel.getStyleClass().add("eventLbl");
@@ -67,5 +72,52 @@ public class AppointmentListController implements Initializable {
                 apptList.getChildren().add(apptLabel);
 
         }
+    }
+    public void reportTypeByMonth() throws SQLException{
+        mainLabel.setText("Appt Type by Month");
+        
+        ResultSet results;
+        
+        String query = 
+        "SELECT MONTHNAME(start) AS month, title AS title, COUNT(title) AS count "
+        + "FROM APPOINTMENTS "
+        + "GROUP BY MONTHNAME(start), title";
+        
+        results = Database.resultQuery(query);
+        
+        
+        
+        while (results.next()){
+            String labelText = 
+                "Month: " + results.getString("month")
+                + "\nTitle: " + results.getString("title")
+                + "\nCount: " + results.getString("count");
+            
+            Label apptLabel = new Label(labelText);
+            apptLabel.getStyleClass().add("eventLbl");
+            apptLabel.setMaxWidth(Double.MAX_VALUE);
+            apptLabel.setMaxHeight(Double.MAX_VALUE);
+            
+            apptList.getChildren().add(apptLabel);
+        }
+ 
+    }
+    public static void totalCountByDay() throws SQLException{
+        ResultSet results;
+        
+        String query = 
+        "SELECT DATE(start) AS date, COUNT(appointmentId) AS count "
+        + "FROM APPOINTMENTS "
+        + "GROUP BY DATE(start)";
+        
+        results = Database.resultQuery(query);
+        
+        while (results.next()){
+            System.out.println(
+                "Date: " + results.getString("date")
+                + " | count: " + results.getString("count")
+            );
+        }
+        System.out.println(results);
     }
 }

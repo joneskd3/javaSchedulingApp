@@ -17,13 +17,33 @@
       <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
    </padding>
    <children>
-      <VBox layoutX="343.0" layoutY="251.0" prefHeight="800.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Label styleClass="mainLabel" text="Calendar" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <font>
+            <Font name="Arial" size="24.0" />
+         </font>
+      </Label>
+      <HBox alignment="TOP_RIGHT" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label styleClass="mainLabel" text="Calendar">
-               <font>
-                  <Font name="Arial" size="24.0" />
-               </font>
-            </Label>
+            <ButtonBar buttonMinWidth="50.0" prefHeight="40.0" prefWidth="547.0">
+              <buttons>
+                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" minWidth="17.0" prefHeight="25.0" text="Reports:">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#apptTypeByMonthBtn" prefHeight="22.0" styleClass="reportBtn" text="# Appt Type by Month">
+                     <font>
+                        <Font size="8.0" />
+                     </font>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#consultantScheduleBtn" styleClass="reportBtn" text="Consultant Schedules" />
+                  <Button mnemonicParsing="false" onAction="#apptByDayBtn" styleClass="reportBtn" text="# Appt by Day" />
+              </buttons>
+            </ButtonBar>
+         </children>
+      </HBox>
+      <VBox layoutX="343.0" layoutY="251.0" prefHeight="800.0" prefWidth="1000.0" styleClass="contentBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+         <children>
             <AnchorPane>
                <children>
                   <HBox AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -51,6 +71,9 @@
                <VBox.margin>
                   <Insets bottom="25.0" />
                </VBox.margin>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
             </AnchorPane>
             <GridPane fx:id="calendarGrid" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="661.0" prefWidth="972.0" style="-fx-padding: 5;">
               <columnConstraints>
@@ -83,6 +106,9 @@
                </children>
             </GridPane>
          </children>
+         <padding>
+            <Insets top="40.0" />
+         </padding>
       </VBox>
    </children>
 </AnchorPane>

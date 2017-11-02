@@ -48,15 +48,22 @@ public class MainSchedulingApp extends Application {
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         Database.startNewConnection();
         Database.createAppointmentTable();
-        populateTestCalendar();
+        calendarArray = new Calendar();
 
-        
-        String insertQuery = "INSERT INTO APPOINTMENTS (appointmentId) VALUES (500)";
-        //Database.actionQuery(insertQuery);
+        //populateTestCalendar();
+        Calendar.populateFromDB();
         String printQuery = "SELECT * FROM APPOINTMENTS";
         Database.printQuery(printQuery);
+
+
+
         
-        appt1.setType("MORE TEST");
+
+        
+        //String insertQuery = "INSERT INTO APPOINTMENTS (appointmentId) VALUES (500)";
+        //Database.actionQuery(insertQuery);
+        
+        //appt1.setTitle("MORE TEST");
         Database.printQuery(printQuery);
 
         
@@ -167,7 +174,6 @@ public class MainSchedulingApp extends Application {
         return firstDayInt;
     }
     public static void populateTestCalendar() throws SQLException{
-        calendarArray = new Calendar();
         
          appt1 = new Appointment(LocalDateTime.now().plusDays(1),"TEST Event",null);
          appt2 = new Appointment(LocalDateTime.now().plusDays(3),"event 3",null);
@@ -200,4 +206,7 @@ public class MainSchedulingApp extends Application {
           // Table does not exist
         }
     }*/
+    
+    
+    
 }

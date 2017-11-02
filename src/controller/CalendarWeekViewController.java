@@ -185,7 +185,7 @@ public class CalendarWeekViewController implements Initializable{
         ArrayList<Appointment> calendar = main.calendarArray.getAppointments();
         
         for(Appointment appointment : calendar ){
-            LocalDate date = appointment.getTime().toLocalDate();
+            LocalDate date = appointment.getStart().toLocalDate();
             int dateInt = date.getDayOfWeek().getValue();
             LocalDate firstDayOfWeek = firstDayOfWeek();
             int firstDayOfWeekInt = firstDayOfWeek().getDayOfWeek().getValue();
@@ -200,8 +200,8 @@ public class CalendarWeekViewController implements Initializable{
             if (date.isAfter(firstDayOfWeek.minusDays(1)) && date.isBefore(firstDayOfWeek.plusDays(7))){
                 System.out.println(dateInt);
                 int horizontal = dateInt + 1;
-                String labelText = (appointment.getTime().toLocalTime().format(DateTimeFormatter.ofPattern("hh:mm a"))
-                    + " - " + appointment.getType());
+                String labelText = (appointment.getStart().toLocalTime().format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    + " - " + appointment.getTitle());
                 Label eventlbl = new Label(labelText);
                 eventlbl.getStyleClass().add("eventLbl");
                 
@@ -215,7 +215,7 @@ public class CalendarWeekViewController implements Initializable{
                         }
                     });
 
-                int vertical = (appointment.getTime().getHour()*2) + (appointment.getTime().getMinute()/30);
+                int vertical = (appointment.getStart().getHour()*2) + (appointment.getStart().getMinute()/30);
                 System.out.println(vertical);
                 int vHPosition = horizontal + (vertical*8);
                 System.out.println(vHPosition);
@@ -243,8 +243,8 @@ public class CalendarWeekViewController implements Initializable{
        populateEvents();
     }
     public void editEvent(Appointment appointments) throws IOException{
-        System.out.println(appointments.getTime());
-        System.out.println(appointments.getType());
+        System.out.println(appointments.getStart());
+        System.out.println(appointments.getTitle());
         System.out.println(appointments.getCustomer());
         
         Stage stage = new Stage();

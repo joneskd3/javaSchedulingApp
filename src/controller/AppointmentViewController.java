@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -57,22 +58,22 @@ public class AppointmentViewController implements Initializable {
     
     @FXML
     void handleSave(ActionEvent event) throws IOException, SQLException {
-        if (! edited){
-        appointment = new Appointment();
-        }
         LocalDate date = dateField.getValue();
         LocalTime time = timeField.getValue();
-        appointment.setTime(time.atDate(date));
+        LocalDateTime dateTime = time.atDate(date);
+        String type = typeField.getText();
+        Customer customer = customerField.getValue();
         
-        appointment.setType(typeField.getText());
-        
-        appointment.setCustomer(customerField.getValue());
-        
-        if(!edited){
-             main.calendarArray.addAppointment(appointment);
+        if (! edited){
+            appointment = new Appointment(dateTime, type, customer);
+            main.calendarArray.addAppointment(appointment);
+
+        } else {
+            appointment.setStart(dateTime);
+            appointment.setTitle(type);
+            appointment.setCustomer(customer);
         }
-        //add to table
-        
+
         main.getStage(event).close();
         
     }
@@ -143,16 +144,15 @@ public class AppointmentViewController implements Initializable {
     
        customerField.setItems(customers);
     }
-    public void editAppt(Appointment appointments){
-        System.out.println(appointments.getType());
+    public void editAppt(Appointment appointment){
         edited = true;
-        this.appointment = appointments;
+        this.appointment = appointment;
         appointmentLabel.setText("Modify Appt");
         
-        dateField.setValue(appointments.getTime().toLocalDate());
-        timeField.setValue(appointments.getTime().toLocalTime());
-        typeField.setText(appointments.getType());
-        customerField.setValue(appointments.getCustomer());
+        dateField.setValue(appointment.getStart().toLocalDate());
+        timeField.setValue(appointment.getStart().toLocalTime());
+        typeField.setText(appointment.getTitle());
+        customerField.setValue(appointment.getCustomer());
      
     }
     public void addAppt(LocalDate date){
