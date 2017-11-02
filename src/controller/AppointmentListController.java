@@ -80,21 +80,18 @@ public class AppointmentListController implements Initializable {
         
         String query = 
         "SELECT MONTHNAME(start) AS month, title AS title, COUNT(title) AS count "
-        + "FROM APPOINTMENTS "
+        + "FROM appointment "
         + "GROUP BY MONTHNAME(start), title";
         
         results = Database.resultQuery(query);
-        
-        
-        
+
         while (results.next()){
             String labelText = 
                 "Month: " + results.getString("month")
-                + "\nTitle: " + results.getString("title")
-                + "\nCount: " + results.getString("count");
-            
+                + "  |  Title: " + results.getString("title")
+                + "  | Count: " + results.getString("count");
             Label apptLabel = new Label(labelText);
-            apptLabel.getStyleClass().add("eventLbl");
+            //apptLabel.getStyleClass().add("eventLbl");
             apptLabel.setMaxWidth(Double.MAX_VALUE);
             apptLabel.setMaxHeight(Double.MAX_VALUE);
             
@@ -102,22 +99,28 @@ public class AppointmentListController implements Initializable {
         }
  
     }
-    public static void totalCountByDay() throws SQLException{
+    public void totalCountByDay() throws SQLException{
+        mainLabel.setText("Appt Count by Day");
+
         ResultSet results;
         
         String query = 
         "SELECT DATE(start) AS date, COUNT(appointmentId) AS count "
-        + "FROM APPOINTMENTS "
+        + "FROM appointment "
         + "GROUP BY DATE(start)";
         
         results = Database.resultQuery(query);
         
         while (results.next()){
-            System.out.println(
+            String labelText = 
                 "Date: " + results.getString("date")
-                + " | count: " + results.getString("count")
-            );
+                + "  | Count: " + results.getString("count");
+            Label apptLabel = new Label(labelText);
+            //apptLabel.getStyleClass().add("eventLbl");
+            apptLabel.setMaxWidth(Double.MAX_VALUE);
+            apptLabel.setMaxHeight(Double.MAX_VALUE);
+            
+            apptList.getChildren().add(apptLabel);
         }
-        System.out.println(results);
     }
 }

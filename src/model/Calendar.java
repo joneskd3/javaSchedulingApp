@@ -23,8 +23,10 @@ public class Calendar {
                         (appt1, appt2) -> appt1.getStart().compareTo(appt2.getStart()));
     }
     public static void populateFromDB() throws SQLException{
-        String query = "SELECT * FROM APPOINTMENTS";
+        String query = "SELECT * FROM appointment";
         ResultSet results = Database.resultQuery(query);
+        
+        //MainSchedulingApp.calendarArray.clear();
         
         while(results.next()){
             int appointmentId = results.getInt("appointmentId");

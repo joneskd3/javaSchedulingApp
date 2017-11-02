@@ -3,6 +3,8 @@ package controller;
 /* Imports */
 import java.io.IOException;
 import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -16,14 +18,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import model.Database;
 import model.MainSchedulingApp;
-import model.User;
 
 public class LoginViewController implements Initializable{
 
     /* FXML Variables */
-    @FXML
-    private AnchorPane signInView;
     @FXML
     private Label signInLabel;
     @FXML
@@ -36,12 +36,11 @@ public class LoginViewController implements Initializable{
     private TextField passwordField;
     @FXML
     private Button signInBtn;
-    @FXML
-    private Label errorMessageLabel;
     
     /* Other Variables */
     Stage stage;
     MainSchedulingApp mainApp;
+    public static String currentUser = "admin";
     
       @FXML
     void Enter(TouchEvent event) {
@@ -53,7 +52,7 @@ public class LoginViewController implements Initializable{
         //
     }
     @FXML
-    void handleSignInBtn(ActionEvent event) throws IOException {
+    void handleSignInBtn(ActionEvent event) throws IOException, SQLException {
 
         if(validateSignIn()){
             mainApp.changeScene(event,"/view/CalendarMonthView.fxml","Calendar");
@@ -84,20 +83,33 @@ public class LoginViewController implements Initializable{
             signInBtn.setText("Se Connecter");
         }
     }
-    public boolean validateSignIn(){
+    public boolean validateSignIn() throws SQLException{
 
         String username = usernameField.getText();
         String password = passwordField.getText();
         
-        for(User user : User.getUserArray()){
-            if (user.getUserName().equals(username)){
-                if (user.getPassword().equals(password)){
-                    return true;
-                } else {
-                    return false;
-                }
+        String query = "SELECT * FROM user WHERE userName = '" + username + "'";
+        ResultSet results = Database.resultQuery(query);
+        
+        while (results.next()){
+            System.out.println("UN: " + results.getString("Username"));
+            System.out.println("PW: " + results.getString("Password"));
+            if (results.getString("password").equals(password)){
+                currentUser = username;
+                return true;
+                
+            } else {
+                return false;
             }
         }
+//        for(User user : User.getUserArray()){
+//            if (user.getUserName().equals(username)){
+//                if (user.getPassword().equals(password)){
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            }
         return false;
     }
 }

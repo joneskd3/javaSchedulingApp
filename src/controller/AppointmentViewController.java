@@ -7,21 +7,30 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import model.Appointment;
 import model.Customer;
 import model.MainSchedulingApp;
+import static model.MainSchedulingApp.getStage;
 
 public class AppointmentViewController implements Initializable {
     @FXML
@@ -30,7 +39,7 @@ public class AppointmentViewController implements Initializable {
     private ComboBox<LocalTime> timeField;
     
     @FXML
-    private ComboBox<Customer> customerField;
+    private  ComboBox<Customer> customerField;
     @FXML
     private AnchorPane signInView;
     @FXML
@@ -90,7 +99,50 @@ public class AppointmentViewController implements Initializable {
 
     @FXML
     void handleModifyCustomer(ActionEvent event) throws IOException {
-        main.changeScene(event,"/view/CustomerView.fxml","Edit Customer");
+
+        int customerIndex = customerField.getSelectionModel().getSelectedIndex();
+        Customer selectedCustomer = customerField.getSelectionModel().getSelectedItem();
+        
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(null);
+        Scene main;
+       
+        FXMLLoader loader = new FXMLLoader();       
+        loader.setLocation(MainSchedulingApp.class.getResource("/view/CustomerView.fxml"));
+        Parent root = (Parent) loader.load();
+        main = new Scene(root);
+        
+        CustomerViewController controller = loader.getController();
+        controller.editCustomer(selectedCustomer);
+        stage.setScene(main);
+        stage.showAndWait();  
+        
+        
+        
+        
+
+//        if(customerIndex >=0){
+//            //FXMLLoader loader = new FXMLLoader();       
+//           
+//                loader.setLocation(MainSchedulingApp.class.getResource("CustomerView.fxml"));
+//                Parent root = (Parent) loader.load(); //sets parent to loader
+//                Scene scene = new Scene(root); //creates new scene   
+//                CustomerViewController controller = loader.getController();
+//                controller.editCustomer(selectedCustomer);
+//            
+//            Stage stage = getStage(event);
+//            stage.setTitle("Modify Customer"); //sets title
+//            //stage.setScene(scene);
+//            stage.show();      
+//        } else { //nothing selected
+//            Alert alert = new Alert(Alert.AlertType.WARNING);
+//            alert.setTitle("No Customer Selected");
+//            alert.setHeaderText("No customer selected");
+//            alert.setContentText("Select a customer from the table.");
+//            alert.showAndWait();
+//        }
+        
     }
     
 
@@ -99,7 +151,16 @@ public class AppointmentViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         createTimeArray();
-        createCustomerArray();   
+        try {
+            createCustomerArray();
+        } catch (SQLException ex) {
+            Logger.getLogger(AppointmentViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {   
+            createCustomerArray();
+        } catch (SQLException ex) {
+            Logger.getLogger(AppointmentViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }  
     public void createTimeArray(){
         ObservableList<LocalTime> options = FXCollections.observableArrayList();
@@ -117,16 +178,20 @@ public class AppointmentViewController implements Initializable {
         
         //customerField.getSelectionModel().getSelectedItem();
     }
-    public void createCustomerArray(){
-        ObservableList<Customer> customers = FXCollections.observableArrayList();
+    public void createCustomerArray() throws SQLException{
+        ObservableList<Customer> observableCustomers = FXCollections.observableArrayList();
         
-        Customer addNewCustomer = new Customer("Add New Customer","","","","","",true,null,null);
-        Customer customer = new Customer("Sam Jones","1340","","","","",true,null,null);
+        //Customer customer = new Customer("Sam Jones","1340","","","","");
+        Customer.populateFromDB();
+        
+        //Customer addNewCustomer = new Customer("Customer","","","","","");
+        
 
-        customers.add(addNewCustomer);
-        customers.add(customer);
-        
-        
+        //customers.add(addNewCustomer);
+        for (Customer customers: Customer.customerArray){
+            observableCustomers.add(customers);
+         }
+                
         
         
         
@@ -142,7 +207,7 @@ public class AppointmentViewController implements Initializable {
             }
         });
     
-       customerField.setItems(customers);
+       customerField.setItems(observableCustomers);
     }
     public void editAppt(Appointment appointment){
         edited = true;

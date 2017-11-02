@@ -1,6 +1,8 @@
 package controller;
 
 import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 import javafx.beans.property.StringProperty;
@@ -15,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import model.Customer;
+import model.Database;
 import model.MainSchedulingApp;
 import model.User;
 
@@ -62,9 +65,10 @@ public class CustomerViewController implements Initializable{
     
     Customer customer;
     MainSchedulingApp mainApp;
+    Boolean edited = false;
 
     @FXML
-    void handleSave(ActionEvent event) {
+    void handleSave(ActionEvent event) throws SQLException {
         customer = new Customer();
         
         customer.setCustomerName(customerNameField.getText());
@@ -92,5 +96,31 @@ public class CustomerViewController implements Initializable{
         options.add(false);
         
         activeField.setItems(options);
-    }           
+    }   
+    public void editCustomer(Customer customer){
+        edited = true;
+        this.customer = customer;
+        //ustomerNameField.setText("Modify Appt");
+        customerNameField.setText(customer.getCustomerName());
+        phoneField.setText(customer.getPhone());
+        //activeField.getValue(customer.getActive());
+        addressField.setText(customer.getAddress());
+        address2Field.setText(customer.getAddress2());
+        cityField.setText(customer.getCity());
+        //stateField.setText(customer.getSt);
+        postalCodeField.setText(customer.getPostalCode());
+
+    
+    }
+//    public void createCountryOptions(){
+//        ObservableList<String> options = FXCollections.observableArrayList();
+//        
+//        String query = "SELECT country FROM country";
+//        ResultSet results = Database.resultQuery(query);
+//        while (results.next()){
+//            options.add(results.getString("country"));
+//        }
+//        
+//        activeField.setItems(options);
+//    }        
 }

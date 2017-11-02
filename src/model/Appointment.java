@@ -1,5 +1,6 @@
 package model;
 
+import controller.LoginViewController;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -47,7 +48,7 @@ public class Appointment {
     }
     public static void getMaxAppointmentID() throws SQLException{
         
-        String maxQuery = "SELECT MAX(appointmentId) AS appointmentId FROM APPOINTMENTS";
+        String maxQuery = "SELECT MAX(appointmentId) AS appointmentId FROM appointment";
         ResultSet results = Database.resultQuery(maxQuery);
         while(results.next()){
             appointmentIdCounter = results.getInt("appointmentID");
@@ -84,15 +85,30 @@ public class Appointment {
              date = this.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         }
         
-        String insert = "INSERT INTO APPOINTMENTS (appointmentId, customerId, title, start)"
-                + " VALUES ("
-                + this.appointmentId + ", "
-                + 10 + ", "
-                + "'" + this.title + "', "
-                + "'" + date + "'"
-                + ")";
         
+        
+        String insert = "INSERT INTO appointment (appointmentId, customerId,"
+            + " title, description, location, contact, url, start,"
+            + " end, createDate, createdBy, lastUpdate, lastUpdateBy) \n"
+            + " VALUES ("
+            + this.appointmentId + ", "
+            + 10 + ", "
+            + "'" + this.title + "', "
+            + "'', "
+            + "'', "
+            + "'', "
+            + "'', "
+            + "'" + date + "', "
+            + "'" + date + "', "
+            + "CURRENT_TIMESTAMP, "
+            + "'" + LoginViewController.currentUser + "', "
+            + "CURRENT_TIMESTAMP, "
+            + "'" + LoginViewController.currentUser + "'"
+            + ")";
+        
+        System.out.println("INSERT QUERY: \n" + insert);
         Database.actionQuery(insert);
+        System.out.println("INSERT SUCCESS");
     }
     public void updateDB() throws SQLException{
         String date = "";
@@ -101,7 +117,7 @@ public class Appointment {
         }
         
         String update =
-            "UPDATE APPOINTMENTS \n"
+            "UPDATE appointment \n"
             + "SET "
                 + "title = '" + this.getTitle() + "', "
                 + "start = '" + date + "', "

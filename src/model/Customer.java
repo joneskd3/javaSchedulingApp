@@ -1,166 +1,319 @@
 package model;
 
+import controller.LoginViewController;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 
 public class Customer {
     
-    private StringProperty customerName;
-    private StringProperty address;
-    private StringProperty address2;
-    private StringProperty city;
-    private StringProperty postalCode;
-    private StringProperty phone;
+    private static int customerIdCounter = 0;
+    public static ArrayList<Customer> customerArray = new ArrayList<>();
+    
+    private int customerId;
+    private String customerName;
+    private String address;
+    private String address2;
+    private String city;
+    private String postalCode;
+    private String phone;
     private Boolean active;
     private LocalDateTime createdDate;
     private User createdBy;
+
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+    public static void getMaxCustomerId() throws SQLException{
+        
+        String maxQuery = "SELECT MAX(customerId) AS customerId FROM customer";
+        ResultSet results = Database.resultQuery(maxQuery);
+        while(results.next()){
+            customerIdCounter = results.getInt("customerId");
+        }
+    }
     
     
-    public Customer(){
-        this("","","","","","",false,null,null);
+    public Customer() throws SQLException{
+        this("","","","","","");
     }
     public Customer(String customerName,String address, String address2, 
-            String city,String postalCode, String phone, Boolean active, LocalDateTime createdDate, User createdBy){
+            String city,String postalCode, String phone) throws SQLException{
         
-        this.customerName = new SimpleStringProperty(customerName);
-        this.address = new SimpleStringProperty(address);
-        this.address2 = new SimpleStringProperty(address2);
-        this.city = new SimpleStringProperty(city);
-        this.postalCode = new SimpleStringProperty(postalCode);
-        this.phone = new SimpleStringProperty(phone);
-        this.active = active;
-        this.createdDate = createdDate;
-        this.createdBy = createdBy;     
+        getMaxCustomerId();
+        
+        this.setCustomerId(customerIdCounter + 1);
+        this.customerName = customerName;
+        this.address = address;
+        this.address2 = address2;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.phone = phone;
+        
+        this.addToDB();
     }
 
-    /**
-     * @return the customerName
-     */
+    public Customer(int customerId, String customerName,String address, String address2, 
+            String city,String postalCode, String phone) throws SQLException{
+        
+ 
+        
+        this.setCustomerId(customerId);
+        this.customerName = customerName;
+        this.address = address;
+        this.address2 = address2;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.phone = phone;
+    }
+
+
     public String getCustomerName() {
-        return customerName.get();
-    }
-
-    /**
-     * @param customerName the customerName to set
-     */
-    public void setCustomerName(String customerName) {
-        this.customerName.set(customerName);
-    }
-    public StringProperty getCustomerNameProperty(){
         return customerName;
     }
-    /**
-     * @return the address
-     */
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+        try {
+            this.updateDB();
+        } catch (SQLException ex) {
+            Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public String getAddress() {
-        return address.get();
+        return address;
     }
 
-    /**
-     * @param address the address to set
-     */
     public void setAddress(String address) {
-        this.address.set(address);
+        this.address = address;
+        try {
+            this.updateDB();
+        } catch (SQLException ex) {
+            Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    /**
-     * @return the address2
-     */
     public String getAddress2() {
-        return address2.get();
+        return address2;
     }
 
-    /**
-     * @param address2 the address2 to set
-     */
     public void setAddress2(String address2) {
-        this.address2.set(address2);
+        this.address2 = address2;
+        try {
+            this.updateDB();
+        } catch (SQLException ex) {
+            Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    /**
-     * @return the city
-     */
     public String getCity() {
-        return city.get();
+        return city;
     }
 
-    /**
-     * @param city the city to set
-     */
     public void setCity(String city) {
-        this.city.set(city);
+        this.city = city;
+        try {
+            this.updateDB();
+        } catch (SQLException ex) {
+            Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    /**
-     * @return the postalCode
-     */
     public String getPostalCode() {
-        return postalCode.get();
+        return postalCode;
     }
 
-    /**
-     * @param postalCode the postalCode to set
-     */
     public void setPostalCode(String postalCode) {
-        this.postalCode.set(postalCode);
+        this.postalCode = postalCode;
+        try {
+            this.updateDB();
+        } catch (SQLException ex) {
+            Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    /**
-     * @return the phone
-     */
     public String getPhone() {
-        return phone.get();
+        return phone;
     }
 
-    /**
-     * @param phone the phone to set
-     */
     public void setPhone(String phone) {
-        this.phone.set(phone);
+        this.phone = phone;
+        try {
+            this.updateDB();
+        } catch (SQLException ex) {
+            Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    /**
-     * @return the active
-     */
     public Boolean getActive() {
         return active;
     }
 
-    /**
-     * @param active the active to set
-     */
     public void setActive(Boolean active) {
         this.active = active;
+        try {
+            this.updateDB();
+        } catch (SQLException ex) {
+            Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    /**
-     * @return the createdDate
-     */
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    /**
-     * @param createdDate the createdDate to set
-     */
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
-    /**
-     * @return the createdBy
-     */
     public User getCreatedBy() {
         return createdBy;
     }
 
-    /**
-     * @param createdBy the createdBy to set
-     */
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
+
     
+    public void addToDB() throws SQLException{
+    
+        String insertCustomer = 
+            "INSERT INTO customer (customerId, customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateBy) "
+            + "VALUES ("
+            + this.customerId + ", "
+            + "'" + this.customerName + "', "
+            + this.customerId  + ", "
+            + 1  + ", "
+            + "CURRENT_TIMESTAMP, "
+            + "'" + LoginViewController.currentUser + "', "
+            + "CURRENT_TIMESTAMP, "
+            + "'" + LoginViewController.currentUser + "'"
+            + ")";
+
+        System.out.println("INSERT QUERY: \n" + insertCustomer);
+        Database.actionQuery(insertCustomer);
+        System.out.println("INSERT SUCCESS");
+        
+        this.updateDB();
+
+        this.addCustomerToDB();
+        this.addCityToDB();
+    }
+    public void addCustomerToDB() throws SQLException{
+        String insertAddress = 
+        "INSERT INTO address (addressId, address, address2, cityId, postalCode, phone, createDate, createdBy, lastUpdate, lastUpdateBy) "
+        + "VALUES ("
+        + this.customerId + ", "
+        + "'" + this.address + "', "
+        + "'" + this.address2 + "', "
+        + this.customerId + ", "
+        + "'" + this.postalCode + "', "
+        + "'" + this.phone + "', "
+        + "CURRENT_TIMESTAMP, "
+        + "'" + LoginViewController.currentUser + "', "
+        + "CURRENT_TIMESTAMP, "
+        + "'" + LoginViewController.currentUser + "'"
+        + ")";
+        
+        System.out.println("INSERT QUERY: \n" + insertAddress);
+        Database.actionQuery(insertAddress);
+        System.out.println("INSERT SUCCESS");
+    }
+    public void addCityToDB() throws SQLException{
+         String insertCity = 
+        "INSERT INTO city (cityId, city, countryId, createDate, createdBy, lastUpdate, lastUpdateBy) "
+        + "VALUES ("
+        + this.customerId + ", "
+        + "'" + this.city + "', "
+        + this.customerId + ", "
+        + "CURRENT_TIMESTAMP, "
+        + "'" + LoginViewController.currentUser + "', "
+        + "CURRENT_TIMESTAMP, "
+        + "'" + LoginViewController.currentUser + "'"
+        + ")";   
+                
+        System.out.println("INSERT QUERY: \n" + insertCity);
+        Database.actionQuery(insertCity);
+        System.out.println("INSERT SUCCESS"); 
+    }
+    public static void populateFromDB() throws SQLException{
+        String query = "SELECT * FROM customer";
+        ResultSet results = Database.resultQuery(query);
+        
+        customerArray.clear();
+        
+        while(results.next()){ 
+            int customerId = results.getInt("customerId"); 
+            String customerName = results.getString("customerName");
+            String address = "";
+            String address2 = "";
+            String city = "";
+            String postalCode = "";
+            String phone = "";
+           
+            Customer customer = new Customer(customerId, customerName, address, address2, city, postalCode, phone);
+            
+            customerArray.add(customer);
+            
+        }
+    }
+    public void updateDB() throws SQLException{
+                
+        String updateCustomer =
+            "UPDATE customer "
+            + "SET "
+                + "customerName = '" + this.customerName + "', "
+                + "active = " + 1 + " "
+            + "WHERE "
+                + "customerId = " + this.customerId;
+        System.out.println(
+            "===="
+            + updateCustomer
+            + "===="
+        );
+        Database.actionQuery(updateCustomer);
+        
+        
+        String updateAddress =
+            "UPDATE address "
+            + "SET "
+                + "address = '" + this.address + "', "
+                + "address2 = '" + this.address2 + "', "
+                + "postalCode = '" + this.postalCode + "', "
+                + "phone = '" + this.phone + "' "
+            + "WHERE "
+                + "addressId = " + this.customerId;
+        System.out.println(
+            "===="
+            + updateAddress
+            + "===="
+        );
+        Database.actionQuery(updateAddress);
+        
+        String updateCity =
+            "UPDATE city "
+            + "SET "
+                + "city = '" + this.city + "' "
+            + "WHERE "
+                + "addressId = " + this.customerId;
+        System.out.println(
+            "===="
+            + updateAddress
+            + "===="
+        );
+        Database.actionQuery(updateAddress);
+        
+        
+    }
 }

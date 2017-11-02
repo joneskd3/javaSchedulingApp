@@ -47,12 +47,7 @@ public class CalendarMonthViewController implements Initializable {
     //Label [][] gridLayout = new Label [5][7];
     
         @FXML
-    void apptByDayBtn(ActionEvent event) {
-
-    }
-
-    @FXML
-    void apptTypeByMonthBtn(ActionEvent event) throws SQLException, IOException {
+    void apptByDayBtn(ActionEvent event) throws SQLException, IOException {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(null);
@@ -62,9 +57,37 @@ public class CalendarMonthViewController implements Initializable {
         loader.setLocation(MainSchedulingApp.class.getResource("/view/AppointmentList.fxml"));
         Parent root = (Parent) loader.load();
         main = new Scene(root);
-        System.out.println(root);
+
+        //main.popUpScene(event, "/view/AppointmentList.fxml", "Appt Type by Month");
+        
+        AppointmentListController controller = loader.getController();
+        controller.totalCountByDay();
+        
+        stage.setScene(main);
+        stage.showAndWait();  
+        refreshCalendar();  
+        
+        
+    }
+
+    @FXML
+    void apptTypeByMonthBtn(ActionEvent event) throws SQLException, IOException {
+        
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(null);
+        Scene main;
+       
+        FXMLLoader loader = new FXMLLoader();       
+        loader.setLocation(MainSchedulingApp.class.getResource("/view/AppointmentList.fxml"));
+        Parent root = (Parent) loader.load();
+        main = new Scene(root);
+
+        //main.popUpScene(event, "/view/AppointmentList.fxml", "Appt Type by Month");
+        
         AppointmentListController controller = loader.getController();
         controller.reportTypeByMonth();
+        
         stage.setScene(main);
         stage.showAndWait();  
         refreshCalendar();  
@@ -77,6 +100,7 @@ public class CalendarMonthViewController implements Initializable {
     @FXML
     void addAppointmentBtn(ActionEvent event) throws IOException {
         MainSchedulingApp.popUpScene(event,"/view/AppointmentView.fxml","Appointment");
+        refreshCalendar();
     }
     @FXML
     void nextMonthBtn(ActionEvent event) {
@@ -219,7 +243,8 @@ public class CalendarMonthViewController implements Initializable {
                
                 } else {
                     Label moreLabel = (Label) vBoxArray.get(arrayPosition).getChildren().get(2);
-                    int count = Integer.parseInt(moreLabel.getText().substring(0, 1)) + 1;
+                    int spaceIndex = moreLabel.getText().indexOf(" ");
+                    int count = Integer.parseInt(moreLabel.getText().substring(0, spaceIndex)) + 1;
                     moreLabel.setText(count + " more...");
                 }
             }
