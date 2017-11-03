@@ -49,8 +49,8 @@ public class AppointmentListController implements Initializable {
         System.out.println(sendDate.toString());
         
         ArrayList<Appointment> appointmentToday = new ArrayList<>();
-        main.calendarArray.sortAppointments();
-        for (Appointment appointment:main.calendarArray.getAppointments()){
+        Appointment.sortAppointments();
+        for (Appointment appointment: Appointment.getAppointments()){
             if (appointment.getStart().toLocalDate().equals(sendDate.toLocalDate())){
                 
                 appointmentToday.add(appointment);

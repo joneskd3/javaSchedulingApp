@@ -64,7 +64,14 @@ public class User {
         String maxQuery = "SELECT MAX(userId) AS userId FROM user";
         ResultSet results = Database.resultQuery(maxQuery);
         while(results.next()){
-            userIdCounter = results.getInt("userId");
+            //convert to string first to check for null
+            String id = results.getString("userId");
+            System.out.println("id test: " + id);
+            if (id == null){
+                userIdCounter = -1;
+            } else {
+                userIdCounter = Integer.parseInt(id);
+            }
         }
     }
 

@@ -26,35 +26,43 @@ import javafx.stage.Stage;
 
 public class MainSchedulingApp extends Application {
     /* Variables */
-    public static Calendar calendarArray;
+
     public static LocalDate currentViewDate = LocalDate.now();
+    public static Stage mainStage;
         
     @Override
     public void start(Stage stage) throws Exception {
+        //save stage into static variable for later reference
+        mainStage = stage;
+
         Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setTitle("Login");
         stage.show();
     }
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        //open DB connection
+        
         Database.startNewConnection();
+        
+        createTestUsers();
+        //createTestCustomers();
+        Customer.populateFromDB();
+        Appointment.populateFromDB();
        
-        calendarArray = new Calendar();
+       
         
-        Calendar.populateFromDB();
         
-        //setFrenchLocale();
-        setEnglishLocale();
-  
-        launch(args);     
+        setFrenchLocale();
+        //setEnglishLocale();
+        
+        launch(args);
     }
     /* JavaFX Methods */
     public static Stage getStage(ActionEvent event){
         return (Stage) ((Node) event.getSource()).getScene().getWindow();
     }
     public static void changeScene(ActionEvent event, String location, String title) throws IOException{
-         
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(MainSchedulingApp.class.getResource(location));
         Parent root = (Parent) loader.load(); //sets parent to loader
@@ -86,13 +94,9 @@ public class MainSchedulingApp extends Application {
     }
     /*Test Methods*/
     public static void createTestAppointments() throws SQLException{
-        Appointment appt1 = new Appointment(LocalDateTime.now().plusDays(1),"TEST Event",null);
-        Appointment appt2 = new Appointment(LocalDateTime.now().plusDays(3),"event 3",null);
-        Appointment appt3 = new Appointment(LocalDateTime.now().plusDays(5),"event 39",null);
-
-        calendarArray.addAppointment(appt1);
-        calendarArray.addAppointment(appt2);
-        calendarArray.addAppointment(appt3);
+        Appointment appt1 = new Appointment(LocalDateTime.now().plusDays(1),"TEST Event",2);
+        Appointment appt2 = new Appointment(LocalDateTime.now().plusDays(3),"event 3",3);
+        Appointment appt3 = new Appointment(LocalDateTime.now().plusDays(5),"event 39",4);
     }
     public static void createTestUsers() throws SQLException{
         User testUser = new User("test","test",true,null,null,null,null);
@@ -101,7 +105,5 @@ public class MainSchedulingApp extends Application {
     }
     public static void createTestCustomers() throws SQLException{
         Customer testCustomer = new Customer("Joe Johnson","Addr 1","addr 2","city","393929","333239392");
-        System.out.println(testCustomer.getCustomerName());
-
     }
 }

@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,7 +18,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -29,8 +29,8 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import model.Appointment;
 import model.Customer;
+import model.Database;
 import model.MainSchedulingApp;
-import static model.MainSchedulingApp.getStage;
 
 public class AppointmentViewController implements Initializable {
     @FXML
@@ -60,45 +60,48 @@ public class AppointmentViewController implements Initializable {
     private Button addCustomerBtn;
     @FXML
     private Button modifyCustomerBtn;
+    @FXML
+    private Button deleteBtn;
     
     MainSchedulingApp main;
     Appointment appointment;
     private boolean edited = false;
     
+    
     @FXML
     void handleSave(ActionEvent event) throws IOException, SQLException {
         LocalDate date = dateField.getValue();
         LocalTime time = timeField.getValue();
+        
         LocalDateTime dateTime = time.atDate(date);
         String type = typeField.getText();
         Customer customer = customerField.getValue();
         
         if (! edited){
-            appointment = new Appointment(dateTime, type, customer);
-            main.calendarArray.addAppointment(appointment);
-
+            appointment = new Appointment(dateTime, type, customer.getCustomerId());
         } else {
             appointment.setStart(dateTime);
             appointment.setTitle(type);
-            appointment.setCustomer(customer);
+            appointment.setCustomer(customer.getCustomerId());
         }
 
         main.getStage(event).close();
-        
+        Appointment.populateFromDB(); 
     }
     @FXML
-    void handleDelete (ActionEvent event) throws IOException {
-
+    void handleDelete (ActionEvent event) throws IOException, SQLException {
+        String query = "DELETE FROM appointment WHERE appointmentId = " + appointment.getAppointmentId();
+        Database.actionQuery(query);
+        Appointment.populateFromDB();
+        main.getStage(event).close();
         
-    }
-    
+    }   
     @FXML
     void handleAddCustomer(ActionEvent event) throws IOException {
         main.changeScene(event,"/view/CustomerView.fxml","Add Customer");
     }
-
     @FXML
-    void handleModifyCustomer(ActionEvent event) throws IOException {
+    void handleModifyCustomer(ActionEvent event) throws IOException, SQLException {
 
         int customerIndex = customerField.getSelectionModel().getSelectedIndex();
         Customer selectedCustomer = customerField.getSelectionModel().getSelectedItem();
@@ -117,6 +120,7 @@ public class AppointmentViewController implements Initializable {
         controller.editCustomer(selectedCustomer);
         stage.setScene(main);
         stage.showAndWait();  
+        createCustomerArray();
         
         
         
@@ -144,19 +148,11 @@ public class AppointmentViewController implements Initializable {
 //        }
         
     }
-    
 
-
-    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         createTimeArray();
         try {
-            createCustomerArray();
-        } catch (SQLException ex) {
-            Logger.getLogger(AppointmentViewController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {   
             createCustomerArray();
         } catch (SQLException ex) {
             Logger.getLogger(AppointmentViewController.class.getName()).log(Level.SEVERE, null, ex);
@@ -171,7 +167,6 @@ public class AppointmentViewController implements Initializable {
         while (!currentTime.equals(LocalTime.parse("23:30"))){
            currentTime = currentTime.plusMinutes(30);
            options.add(currentTime);
-           System.out.println(currentTime);
         }
         
         timeField.setItems(options);
@@ -181,24 +176,24 @@ public class AppointmentViewController implements Initializable {
     public void createCustomerArray() throws SQLException{
         ObservableList<Customer> observableCustomers = FXCollections.observableArrayList();
         
-        //Customer customer = new Customer("Sam Jones","1340","","","","");
         Customer.populateFromDB();
-        
-        //Customer addNewCustomer = new Customer("Customer","","","","","");
-        
 
-        //customers.add(addNewCustomer);
         for (Customer customers: Customer.customerArray){
             observableCustomers.add(customers);
          }
-                
-        
-        
-        
+
         customerField.setConverter(new StringConverter<Customer>(){
             @Override
             public String toString(Customer customer){
-                return customer.getCustomerName();
+                String active;
+                if (customer.getActive()){
+                    active = "(Active)";
+                } else {
+                    active = "(Inactive)";
+                }
+                String display = customer.getCustomerName() + " " + active;
+                
+                return display;
             }
 
             @Override
@@ -209,16 +204,17 @@ public class AppointmentViewController implements Initializable {
     
        customerField.setItems(observableCustomers);
     }
-    public void editAppt(Appointment appointment){
+    public void editAppt(Appointment appointment) throws SQLException{
         edited = true;
+        deleteBtn.setVisible(true);
         this.appointment = appointment;
         appointmentLabel.setText("Modify Appt");
-        
+                
         dateField.setValue(appointment.getStart().toLocalDate());
         timeField.setValue(appointment.getStart().toLocalTime());
         typeField.setText(appointment.getTitle());
         customerField.setValue(appointment.getCustomer());
-     
+        
     }
     public void addAppt(LocalDate date){
         dateField.setValue(date);

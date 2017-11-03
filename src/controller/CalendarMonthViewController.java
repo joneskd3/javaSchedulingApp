@@ -2,7 +2,6 @@ package controller;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -122,7 +121,11 @@ public class CalendarMonthViewController implements Initializable {
     }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-   
+        try {
+            Appointment.populateFromDB();
+        } catch (SQLException ex) {
+            Logger.getLogger(CalendarMonthViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         addVBox();
         formatHeader();
         createCalendar();
@@ -201,7 +204,7 @@ public class CalendarMonthViewController implements Initializable {
         populateEvents();
     }
     public void populateEvents(){
-        for (Appointment appointment : main.calendarArray.getAppointments()){
+        for (Appointment appointment : Appointment.getAppointments()){
             if (appointment.getStart().getYear() == main.currentViewDate.getYear()
                 && appointment.getStart().getMonthValue() == main.currentViewDate.getMonthValue()){
                 
@@ -223,7 +226,11 @@ public class CalendarMonthViewController implements Initializable {
 
                     apptLabel.addEventHandler(MouseEvent.MOUSE_PRESSED, (e)->{
                         try {
-                            editEvent(appointment);
+                            try {
+                                editEvent(appointment);
+                            } catch (SQLException ex) {
+                                Logger.getLogger(CalendarMonthViewController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         } catch (IOException ex) {
                             Logger.getLogger(CalendarMonthViewController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -260,7 +267,7 @@ public class CalendarMonthViewController implements Initializable {
         String year = String.valueOf(main.currentViewDate.getYear());
         monthYearLabel.setText(month + " " + year);
     }
-    public void editEvent(Appointment appointments) throws IOException{
+    public void editEvent(Appointment appointments) throws IOException, SQLException{
         System.out.println(appointments.getStart());
         System.out.println(appointments.getTitle());
         System.out.println(appointments.getCustomer());
