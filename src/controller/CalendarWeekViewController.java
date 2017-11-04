@@ -1,3 +1,58 @@
+/*
+DOCUMENTATION
+
+//LOG-IN FORM//
+
+- The test login credentials are:
+  - username: test
+  - Password: test
+
+- The log-in form can be translated into 3 languages (English, Italian, and French)
+- These are the methods used to test this:
+
+    Locale.setDefault(new Locale("fr", "FR")); //French
+    Locale.setDefault(new Locale("en", "EN")); //English
+    Locale.setDefault(new Locale("it", "IT")); //Italian
+
+- A log of successful log-ins resides at the root of KeithJonesSchedulingApp in the logFile.txt file
+
+//REMINDERS//
+- Reminders will display if the logged in user is the createdBy user on the appointment and the appointment is within 15 minutes
+- A separate user is available to test this:
+	*Username: pw
+	*Password: pw
+- To aid testing, the REMINDER_TIME int at the top of the LoginViewController can be adjusted to a time other than the default of 15
+
+//ADD + MAINTAIN CUSTOMER//
+
+- To add/maintain a customer, click Add Appt/Customer, then click Add Customer or Modify Customer
+- To deactivate a customer, click Modify Customer, then Deactivate
+- A deactivated customer can be reactivated by following the same method and clicking Reactivate.
+
+//MAINTAINING APPOINTMENTS//
+- Appointments can be viewed in a month (default) or week view (click the week button).
+- Once an appointment has been added to the calendar, it can be clicked from the Month or Week view to modify.
+- On the month calendar, the day of the month can be clicked to add a new appointment (appointments can also be added through the Add Appt/Customer button).
+- If more than 1 appointment is scheduled on a day in the month view, the more text can be clicked to bring up a list of the appointments for that day. Any of these can be clicked to modify.
+- To delete an appointment, select it to bring up the Modify Appointment window, then click Delete.
+
+//TIMEZONE//
+- Appointments will automatically adjust based on the system time zone
+
+//VALIDATION//
+- Appointments must be scheduled within business hours (0800-2000).
+- Appointments cannot overlap
+- All fields on the appointment and customer fields must be completed
+- The username/password for login must be correct
+
+//REPORTING//
+-Reports are available at the top right of the month view page. These include:
+	*number of appt types by month (using title field)
+	*Schedules grouped by consultant (createdBy user field)
+	*total appointments per day
+*/
+
+
 package controller;
 
 import java.io.IOException;
@@ -52,6 +107,7 @@ public class CalendarWeekViewController implements Initializable{
     @FXML
     void addAppointmentBtn(ActionEvent event) throws IOException {
        MainSchedulingApp.popUpScene(event,"/view/AppointmentView.fxml","Appointment");
+       refreshCalendar();
     }
     @FXML
     void nextMonthBtn(ActionEvent event) {
@@ -256,7 +312,8 @@ public class CalendarWeekViewController implements Initializable{
         AppointmentViewController controller = loader.getController();
         controller.addAppt(date, time);
         stage.setScene(main);
-        stage.showAndWait();  
+        stage.showAndWait(); 
+        
         refreshCalendar();    
     }
     public void refreshCalendar(){

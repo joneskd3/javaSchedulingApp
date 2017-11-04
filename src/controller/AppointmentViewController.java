@@ -269,19 +269,21 @@ public class AppointmentViewController implements Initializable {
         
         return true;
     }
-    public boolean validateFields(){
+    public boolean validateFields(){        
+        
         if(dateField.getValue() != null &&
                 timeField.getValue() != null &&
                 typeField.getValue() != null &&
                 customerField.getValue() != null){
             
             return true;          
-        } 
-         
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Empty Fields");
-        alert.setContentText("All fields must have an entry");
-        alert.showAndWait();
-        return false;
+        } else {
+                 
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Empty Fields");
+            alert.setContentText("All fields must have an entry");
+            alert.showAndWait();
+            return false;
+        }
     }
 }

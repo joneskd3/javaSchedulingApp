@@ -24,7 +24,9 @@ import model.Database;
 import model.MainSchedulingApp;
 
 public class LoginViewController implements Initializable{
-
+    //Change this to alter the reminder time from 15 minutes
+    final int REMINDER_TIME = 15;
+    
     /* FXML Variables */
     @FXML
     private Label signInLabel;
@@ -40,11 +42,13 @@ public class LoginViewController implements Initializable{
     private Button signInBtn;
     
     /* Other Variables */
+    
     MainSchedulingApp mainApp;
     public static String currentUser = "admin";
     Boolean frenchLanguage = false;
     Boolean italianLanguage = false;
     Boolean englishLanguage = false;
+    
     
     @FXML
     void handleSignInBtn(ActionEvent event) throws IOException, SQLException {
@@ -120,7 +124,8 @@ public class LoginViewController implements Initializable{
         String query = 
                 "SELECT start, customer.customerName AS name, title "
                 + "FROM appointment LEFT JOIN customer ON appointment.customerId = customer.customerId "
-                + "WHERE TIMESTAMPDIFF(MINUTE,start,CURRENT_TIMESTAMP) BETWEEN 0 AND 15 AND appointment.createdBy = '" + currentUser + "'";
+                + "WHERE TIMESTAMPDIFF(MINUTE,CURRENT_TIMESTAMP,start) BETWEEN 0 AND " + REMINDER_TIME 
+                + " AND appointment.createdBy = '" + currentUser + "'";
         
         ResultSet results = Database.resultQuery(query);
         
@@ -134,10 +139,10 @@ public class LoginViewController implements Initializable{
             reminders = reminders + " - " + title + " at " + startFormatted + " with " + name + "\n";           
         }
         if (reminders.length() > 0){
-            reminders = "Upcoming appointments with " + currentUser + ": \n" + reminders;
+            reminders = "Upcoming appointments: \n" + reminders;
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Upcoming Appointments");
-            //alert.setHeaderText("");
+            alert.setHeaderText("Reminder");
             alert.setContentText(reminders);
             alert.showAndWait();
         }

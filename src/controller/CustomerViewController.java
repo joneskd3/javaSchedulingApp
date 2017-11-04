@@ -41,21 +41,27 @@ public class CustomerViewController implements Initializable{
 
     @FXML
     void handleSave(ActionEvent event) throws SQLException {
-        if(validateFields()){
-            if(!edited){
-              customer = new Customer();
+        try{
+            if(validateFields()){
+                if(!edited){
+                  customer = new Customer();
+                }
+
+                customer.setCustomerName(customerNameField.getText());
+                customer.setAddress(addressField.getText());
+                customer.setAddress2(address2Field.getText());
+                customer.setCity(cityField.getText());
+                customer.setPostalCode(postalCodeField.getText());
+                customer.setPhone(phoneField.getText());
+
+                mainApp.getStage(event).close();  
             }
-
-            customer.setCustomerName(customerNameField.getText());
-            customer.setAddress(addressField.getText());
-            customer.setAddress2(address2Field.getText());
-            customer.setCity(cityField.getText());
-            customer.setPostalCode(postalCodeField.getText());
-            customer.setPhone(phoneField.getText());
-
-            mainApp.getStage(event).close();  
+        } catch (UnsupportedOperationException e){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Empty Fields");
+            alert.setContentText("All fields must have an entry");
+            alert.showAndWait();
         }
-        
     }
     @FXML
     void handleDelete(ActionEvent event) throws SQLException {
@@ -91,19 +97,15 @@ public class CustomerViewController implements Initializable{
         postalCodeField.setText(customer.getPostalCode());
 
     }
-    public boolean validateFields(){
+    public boolean validateFields() throws UnsupportedOperationException{
         if(customerNameField.getText().isEmpty() ||
                 addressField.getText().isEmpty() ||
                 address2Field.getText().isEmpty() ||
                 cityField.getText().isEmpty() ||
                 postalCodeField.getText().isEmpty() ||
                 phoneField.getText().isEmpty()
-                ){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Empty Fields");
-            alert.setContentText("All fields must have an entry");
-            alert.showAndWait();
-            return false;
+                ){ 
+            throw new UnsupportedOperationException();
         }
         return true;
     }

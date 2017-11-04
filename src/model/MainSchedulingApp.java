@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Locale;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -43,6 +44,7 @@ public class MainSchedulingApp extends Application {
         
         //Create test user 
         createTestUsers();
+        createTestCustomers();
         
         //Test methods for Local
         //Locale.setDefault(new Locale("fr", "FR")); //French
@@ -98,7 +100,14 @@ public class MainSchedulingApp extends Application {
         }
     }
     public static void createTestCustomers() throws SQLException{
-        Customer testCustomer = new Customer("Joe Johnson","Addr 1","addr 2","city","393929","333239392");
+        String query = "SELECT COUNT(*) AS count FROM customer";
+        ResultSet results = Database.resultQuery(query);
+        //creates test customers only if table is empty
+        while(results.next()){
+            if(results.getInt("count") == 0){
+                Customer customer = new Customer("Test Customer","Test Address St","Apt 34","TestCity","56594","8839939989");
+            }
+        }
     }
     
 }
