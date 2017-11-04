@@ -5,7 +5,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -41,11 +40,6 @@
             <Label fx:id="usernameLabel2" text="Date" textFill="#4285f4" GridPane.rowIndex="1" />
             <Label fx:id="usernameLabel1" text="Time" textFill="#4285f4" GridPane.rowIndex="2" />
             <Label fx:id="usernameLabel" text="Appt Type" textFill="#4285f4" GridPane.rowIndex="3" />
-            <TextField fx:id="typeField" GridPane.columnIndex="1" GridPane.rowIndex="3">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </TextField>
             <Label fx:id="passwordLabel" text="Customer" textFill="#4285f4" GridPane.rowIndex="4" />
             <HBox prefHeight="100.0" prefWidth="200.0" />
             <DatePicker fx:id="dateField" prefHeight="31.0" prefWidth="243.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -72,6 +66,7 @@
                   <Insets top="5.0" />
                </GridPane.margin>
             </HBox>
+            <ComboBox fx:id="typeField" prefHeight="33.0" prefWidth="243.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          </children>
          <padding>
             <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />

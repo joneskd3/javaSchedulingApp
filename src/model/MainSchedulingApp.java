@@ -1,35 +1,27 @@
 package model;
 
-import controller.CalendarMonthViewController;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.time.LocalTime;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
 public class MainSchedulingApp extends Application {
     /* Variables */
-
     public static LocalDate currentViewDate = LocalDate.now();
     public static Stage mainStage;
-        
+    public static LocalTime businessHoursStart = LocalTime.of (8, 0);
+    public static LocalTime businessHoursEnd = LocalTime.of (20, 0);
+    
     @Override
     public void start(Stage stage) throws Exception {
         //save stage into static variable for later reference
@@ -42,29 +34,31 @@ public class MainSchedulingApp extends Application {
     }
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         //open DB connection
-        
         Database.startNewConnection();
         
-        createTestUsers();
-        //createTestCustomers();
+        //populate arrays from DB
+        User.populateFromDB();
         Customer.populateFromDB();
         Appointment.populateFromDB();
-       
-       
         
+        //Create test user 
+        createTestUsers();
         
-        setFrenchLocale();
-        //setEnglishLocale();
-        
+        //Test methods for Local
+        //Locale.setDefault(new Locale("fr", "FR")); //French
+        //Locale.setDefault(new Locale("en", "EN")); //English
+        //Locale.setDefault(new Locale("it", "IT")); //Italian
+
         launch(args);
     }
     /* JavaFX Methods */
+    //returns current stage
     public static Stage getStage(ActionEvent event){
         return (Stage) ((Node) event.getSource()).getScene().getWindow();
     }
-    public static void changeScene(ActionEvent event, String location, String title) throws IOException{
+    public static void changeScene(ActionEvent event, String fxmlLocation, String title) throws IOException{
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(MainSchedulingApp.class.getResource(location));
+        loader.setLocation(MainSchedulingApp.class.getResource(fxmlLocation));
         Parent root = (Parent) loader.load(); //sets parent to loader
         Scene scene = new Scene(root); //creates new scene   
         Stage stage = getStage(event);
@@ -86,12 +80,6 @@ public class MainSchedulingApp extends Application {
         popUp.setScene(scene); //sets scene on stage
         popUp.showAndWait();
     }
-    public static void setFrenchLocale(){
-        Locale.setDefault(Locale.FRENCH);
-    }
-    public static void setEnglishLocale(){
-        Locale.setDefault(Locale.ENGLISH);
-    }
     /*Test Methods*/
     public static void createTestAppointments() throws SQLException{
         Appointment appt1 = new Appointment(LocalDateTime.now().plusDays(1),"TEST Event",2);
@@ -99,11 +87,18 @@ public class MainSchedulingApp extends Application {
         Appointment appt3 = new Appointment(LocalDateTime.now().plusDays(5),"event 39",4);
     }
     public static void createTestUsers() throws SQLException{
-        User testUser = new User("test","test",true,null,null,null,null);
-        System.out.println(testUser.getUserName());
-
+        String query = "SELECT COUNT(*) AS count FROM user";
+        ResultSet results = Database.resultQuery(query);
+        //creates test users only if table is empty
+        while(results.next()){
+            if(results.getInt("count") == 0){
+                User testUser = new User("test","test",true);
+                User testUser2 = new User("pw","pw",true);
+            }
+        }
     }
     public static void createTestCustomers() throws SQLException{
         Customer testCustomer = new Customer("Joe Johnson","Addr 1","addr 2","city","393929","333239392");
     }
+    
 }

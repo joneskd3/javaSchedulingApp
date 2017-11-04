@@ -24,8 +24,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Appointment;
-import model.Calendar;
-import model.Database;
 import model.MainSchedulingApp;
 
 public class CalendarMonthViewController implements Initializable {
@@ -42,10 +40,9 @@ public class CalendarMonthViewController implements Initializable {
     /* Other Variables */
     ArrayList<VBox> vBoxArray = new ArrayList<>();
     MainSchedulingApp main;
-
-    //Label [][] gridLayout = new Label [5][7];
     
-        @FXML
+    /*Report Buttons*/
+    @FXML
     void apptByDayBtn(ActionEvent event) throws SQLException, IOException {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -56,8 +53,6 @@ public class CalendarMonthViewController implements Initializable {
         loader.setLocation(MainSchedulingApp.class.getResource("/view/AppointmentList.fxml"));
         Parent root = (Parent) loader.load();
         main = new Scene(root);
-
-        //main.popUpScene(event, "/view/AppointmentList.fxml", "Appt Type by Month");
         
         AppointmentListController controller = loader.getController();
         controller.totalCountByDay();
@@ -65,10 +60,7 @@ public class CalendarMonthViewController implements Initializable {
         stage.setScene(main);
         stage.showAndWait();  
         refreshCalendar();  
-        
-        
     }
-
     @FXML
     void apptTypeByMonthBtn(ActionEvent event) throws SQLException, IOException {
         
@@ -81,8 +73,6 @@ public class CalendarMonthViewController implements Initializable {
         loader.setLocation(MainSchedulingApp.class.getResource("/view/AppointmentList.fxml"));
         Parent root = (Parent) loader.load();
         main = new Scene(root);
-
-        //main.popUpScene(event, "/view/AppointmentList.fxml", "Appt Type by Month");
         
         AppointmentListController controller = loader.getController();
         controller.reportTypeByMonth();
@@ -91,11 +81,27 @@ public class CalendarMonthViewController implements Initializable {
         stage.showAndWait();  
         refreshCalendar();  
     }
-
     @FXML
-    void consultantScheduleBtn(ActionEvent event) {
-
+    void consultantScheduleBtn(ActionEvent event) throws IOException, SQLException {
+         
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(null);
+        Scene main;
+       
+        FXMLLoader loader = new FXMLLoader();       
+        loader.setLocation(MainSchedulingApp.class.getResource("/view/AppointmentList.fxml"));
+        Parent root = (Parent) loader.load();
+        main = new Scene(root);
+        
+        AppointmentListController controller = loader.getController();
+        controller.reportConsultantSchedule();
+        
+        stage.setScene(main);
+        stage.showAndWait();  
+        refreshCalendar();    
     }
+    /*Calendar Methods*/
     @FXML
     void addAppointmentBtn(ActionEvent event) throws IOException {
         MainSchedulingApp.popUpScene(event,"/view/AppointmentView.fxml","Appointment");
@@ -119,6 +125,7 @@ public class CalendarMonthViewController implements Initializable {
     void handleWeekBtn(ActionEvent event) throws IOException {
         MainSchedulingApp.changeScene(event, "/view/CalendarWeekView.fxml", "Calendar - Week View");
     }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
@@ -129,11 +136,11 @@ public class CalendarMonthViewController implements Initializable {
         addVBox();
         formatHeader();
         createCalendar();
-    }    
-    
-    /* Adds a VBox to each cell of the Gridpane (CalendarGrid)*/
+    }      
+    /*Calendar Creation Methods*/
     public void addVBox(){
-        
+         /* Adds a VBox to each cell of the Gridpane (CalendarGrid)*/
+
         //number of rows and columns
         int numRows = 6;
         int numCols = 7;
@@ -146,11 +153,9 @@ public class CalendarMonthViewController implements Initializable {
                 VBox day = new VBox();
                 day.getStyleClass().add("day");
                 
-                
                 //adds VBox to array for later access
                 vBoxArray.add(day);
-                
-                
+                      
                 calendarGrid.add(day,j,i);
             }
         }
@@ -183,15 +188,16 @@ public class CalendarMonthViewController implements Initializable {
                     dayLabel.setMaxWidth(Double.MAX_VALUE); 
                     
                     dayLabel.addEventHandler(MouseEvent.MOUSE_PRESSED, (e)->{
-                    try {
-                        addEvent(dayLabel);
-                    } catch (IOException ex) {
-                        Logger.getLogger(CalendarMonthViewController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                });
+                        try {
+                            addEvent(dayLabel);
+                        } catch (IOException ex) {
+                            Logger.getLogger(CalendarMonthViewController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
 
                     currentDay++;
                     vBoxArrayPosition++;
+                    
                 } else {
                     //shade cells after month's date range
                     while (vBoxArrayPosition < vBoxArray.size()){
@@ -204,6 +210,7 @@ public class CalendarMonthViewController implements Initializable {
         populateEvents();
     }
     public void populateEvents(){
+        Appointment.sortAppointments();
         for (Appointment appointment : Appointment.getAppointments()){
             if (appointment.getStart().getYear() == main.currentViewDate.getYear()
                 && appointment.getStart().getMonthValue() == main.currentViewDate.getMonthValue()){
@@ -211,7 +218,6 @@ public class CalendarMonthViewController implements Initializable {
                 //create appt label format
                 String labelText = (appointment.getStart().toLocalTime().format(DateTimeFormatter.ofPattern("hh:mm a"))
                     + " - " + appointment.getTitle());
-                    //+ "\n" + appointment.getCustomer());
                 
                 Label apptLabel = new Label(labelText);
                 apptLabel.getStyleClass().add("eventLbl");
@@ -247,7 +253,6 @@ public class CalendarMonthViewController implements Initializable {
                         }
                     });
                     
-               
                 } else {
                     Label moreLabel = (Label) vBoxArray.get(arrayPosition).getChildren().get(2);
                     int spaceIndex = moreLabel.getText().indexOf(" ");
@@ -267,11 +272,25 @@ public class CalendarMonthViewController implements Initializable {
         String year = String.valueOf(main.currentViewDate.getYear());
         monthYearLabel.setText(month + " " + year);
     }
-    public void editEvent(Appointment appointments) throws IOException, SQLException{
-        System.out.println(appointments.getStart());
-        System.out.println(appointments.getTitle());
-        System.out.println(appointments.getCustomer());
+    public void refreshCalendar(){
+        clearCalendar();
+        createCalendar();
+    }
+    public int getFirstDay(){
+        //Gets first day of month by subtracting (current day of month - 1) from current day
+        LocalDate firstDay = main.currentViewDate.minusDays(main.currentViewDate.getDayOfMonth()-1);
         
+        //Gets first day of week
+        int firstDayOfWeek = firstDay.getDayOfWeek().getValue();
+       
+        //converts 7 to 0 since the week starts on Sunday
+        if(firstDayOfWeek == 7){
+            firstDayOfWeek = 0;
+        }
+        return firstDayOfWeek;
+    }
+    /*Appointment Manipulation Methods*/
+    public void editEvent(Appointment appointments) throws IOException, SQLException{ 
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(null);
@@ -281,18 +300,16 @@ public class CalendarMonthViewController implements Initializable {
         loader.setLocation(MainSchedulingApp.class.getResource("/view/AppointmentView.fxml"));
         Parent root = (Parent) loader.load();
         main = new Scene(root);
-        System.out.println(root);
+        
         AppointmentViewController controller = loader.getController();
         controller.editAppt(appointments);
         stage.setScene(main);
         stage.showAndWait();  
         
         refreshCalendar();
-       
-         
     }
     public void addEvent(Label day) throws IOException{
-    
+        
         int dayInt = Integer.parseInt(day.getText());
         LocalDate sendDate = main.currentViewDate.withDayOfMonth(dayInt);
         
@@ -305,11 +322,12 @@ public class CalendarMonthViewController implements Initializable {
         loader.setLocation(MainSchedulingApp.class.getResource("/view/AppointmentView.fxml"));
         Parent root = (Parent) loader.load();
         main = new Scene(root);
-        System.out.println(root);
+        
         AppointmentViewController controller = loader.getController();
         controller.addAppt(sendDate);
         stage.setScene(main);
         stage.showAndWait();  
+        
         refreshCalendar();
        
          
@@ -326,31 +344,10 @@ public class CalendarMonthViewController implements Initializable {
         loader.setLocation(MainSchedulingApp.class.getResource("/view/AppointmentList.fxml"));
         Parent root = (Parent) loader.load();
         main = new Scene(root);
-        System.out.println(root);
         AppointmentListController controller = loader.getController();
         controller.listAppt(day);
         stage.setScene(main);
         stage.showAndWait();  
         refreshCalendar();  
     }
-    public void refreshCalendar(){
-        clearCalendar();
-        System.out.println("CLEARED");
-        createCalendar();
-    }
-    public int getFirstDay(){
-        //Gets first day of month by subtracting (current day of month - 1) from current day
-        LocalDate firstDay = main.currentViewDate.minusDays(main.currentViewDate.getDayOfMonth()-1);
-        
-        //Gets first day of week
-        int firstDayOfWeek = firstDay.getDayOfWeek().getValue();
-       
-        //converts 7 to 0 since the week starts on Sunday
-        if(firstDayOfWeek == 7){
-            firstDayOfWeek = 0;
-        }
-        return firstDayOfWeek;
-    }
-    
 }
-    

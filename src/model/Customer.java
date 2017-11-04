@@ -3,17 +3,13 @@ package model;
 import controller.LoginViewController;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 public class Customer {
-    
+    /*global methods*/
     private static int customerIdCounter;
     public static ArrayList<Customer> customerArray = new ArrayList<>();
-    
+    /*Instance variables*/
     private int customerId;
     private String customerName;
     private String address;
@@ -39,6 +35,7 @@ public class Customer {
         this.city = city;
         this.postalCode = postalCode;
         this.phone = phone;
+        this.active = true;
         
         this.addToDB();
     }
@@ -64,6 +61,7 @@ public class Customer {
     public static void getMaxCustomerId() throws SQLException{
         String maxQuery = "SELECT MAX(customerId) AS customerId FROM customer";
         ResultSet results = Database.resultQuery(maxQuery);
+        
         while(results.next()){
             //convert to string first to check for null
             String id = results.getString("customerId");
@@ -187,7 +185,7 @@ public class Customer {
         Database.actionQuery(insertCity);
     }
     public void updateDB() throws SQLException{
-                
+        //Customer        
         String updateCustomer =
             "UPDATE customer "
             + "SET "
@@ -198,7 +196,7 @@ public class Customer {
       
         Database.actionQuery(updateCustomer);
         
-        
+        //Address
         String updateAddress =
             "UPDATE address "
             + "SET "
@@ -211,6 +209,7 @@ public class Customer {
     
         Database.actionQuery(updateAddress);
         
+        //City
         String updateCity =
             "UPDATE city "
             + "SET "
@@ -218,11 +217,12 @@ public class Customer {
             + "WHERE "
                 + "cityId = " + this.customerId;
 
-        Database.actionQuery(updateCity);
-        
-        
+        Database.actionQuery(updateCity);    
     }
     public static void populateFromDB() throws SQLException{
+        
+        customerArray.clear();
+
         String customerQuery = 
                 "SELECT "
                     + "customerId, "
@@ -239,10 +239,7 @@ public class Customer {
                 + "ORDER BY customerId";
         
         ResultSet results = Database.resultQuery(customerQuery);
-         
-        customerArray.clear();
-        
-        
+             
         Boolean active; 
         while(results.next()){ 
             int customerId = results.getInt("customerId"); 
@@ -253,22 +250,17 @@ public class Customer {
             String postalCode = results.getString("postalCode");
             String phone = results.getString("phone");
             int activeInt = results.getInt("active");
-            if (activeInt == 0){
+            if (activeInt == 1){
                 active = true;
             } else {
                 active = false;
             }
             
-           
             Customer customer = new Customer(customerId, customerName, address, address2, city, postalCode, phone, active);
-            
             customerArray.add(customer);
-            
         }
-        for(Customer customer : customerArray){
-            System.out.println(customer.getCustomerId());
-        }
-    }  
+    }
+    //converts between Boolean active and int
     public int activeToInt (){
         if (this.getActive() == null || this.getActive()){
             return 1;

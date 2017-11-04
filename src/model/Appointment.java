@@ -3,16 +3,21 @@ package model;
 import controller.LoginViewController;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Appointment {
-    //global appointmentID counter to identify appt in SQL
+    /*Global Variables*/
+    //ID counter for assingment in SQL
     private static int appointmentIdCounter;
     private static ArrayList<Appointment> appointmentArray = new ArrayList<>();
-
+    
+    /*Instance variables*/
     private int appointmentId;
     private LocalDateTime start;
     private String title;
@@ -24,18 +29,18 @@ public class Appointment {
         this(null,"",0);
     }
     public Appointment(LocalDateTime time, String type, int customer) throws SQLException{
-        //updates static appointmentIDCounter to max in DB
         getMaxAppointmentID();
         
         this.setAppointmentId(appointmentIdCounter + 1);
         this.setStart(time);
         this.setTitle(type);
-        this.setCustomerId(customer);
+        this.setCustomerId(customer); //search by customer ID to tie to SQL
         
         this.addToDB();
     }
-    //used if importing appointments with appointmentId from DB
     public Appointment(int appointmentId, LocalDateTime time, String title, int customer) throws SQLException{        
+        //used if importing appointments with appointmentId from DB
+
         this.setAppointmentId(appointmentId);
         this.setStart(time);
         this.setTitle(title);
@@ -49,8 +54,9 @@ public class Appointment {
         this.appointmentId = appointmentId;
     }
     public static void getMaxAppointmentID() throws SQLException{
-        String maxQuery = "SELECT MAX(appointmentId) AS appointmentId FROM appointment";
-        ResultSet results = Database.resultQuery(maxQuery);
+        String query = "SELECT MAX(appointmentId) AS appointmentId FROM appointment";
+        ResultSet results = Database.resultQuery(query);
+        
         while(results.next()){
             //convert to string first to check for null
             String id = results.getString("appointmentID");
@@ -83,7 +89,6 @@ public class Appointment {
     }
     public void setCustomerId(int customerId) throws SQLException {
         this.customerId = customerId;
-        
         this.updateDB();
         this.setCustomer(customerId);
     }
@@ -91,6 +96,7 @@ public class Appointment {
         return customer;
     }
     public void setCustomer(int customerId) throws SQLException {
+        //get customer object from customer id
         this.customer = Customer.customerArray.get(customerId);
         updateDB();
     }
@@ -124,8 +130,7 @@ public class Appointment {
         Database.actionQuery(insert);
     }
     public void updateDB() throws SQLException{
-        
-        System.out.println(this.getCustomer());
+
         String update =
             "UPDATE appointment "
             + "SET "
@@ -142,17 +147,13 @@ public class Appointment {
     //converts appointment date to correct format for SQL
     public String formatDate(){
         String date = "";
+        
         if (this.getStart() != null){
-             date = this.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            //converts to UTC
+            LocalDateTime startLocalDateTime = Appointment.toUTC(this.getStart());
+            date = startLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         }
         return date;
-    }
-
-    public static ArrayList<Appointment> getAppointments() {
-        return appointmentArray;
-    }
-    public static void sortAppointments() {
-        Collections.sort(appointmentArray, (Appointment appt1, Appointment appt2) -> appt1.getStart().compareTo(appt2.getStart()));
     }
     public void addAppointment(Appointment appointment) {
         appointmentArray.add(appointment);
@@ -160,18 +161,47 @@ public class Appointment {
     public static void populateFromDB() throws SQLException {
         String query = "SELECT * FROM appointment";
         ResultSet results = Database.resultQuery(query);
-        appointmentArray.clear();
+        
+        appointmentArray.clear();//resets array to blank
+        
         while (results.next()) {
             int appointmentId = results.getInt("appointmentId");
-            System.out.println(appointmentId);
+            
             String timeString = results.getString("start");
-            System.out.println(timeString);
             LocalDateTime start = LocalDateTime.parse(timeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.n"));
+            start = Appointment.toLocalDateTime(start);
+            
             String title = results.getString("title");
             int customerId = results.getInt("customerId");
+            
             Appointment appt = new Appointment(appointmentId, start, title, customerId);
             
             appointmentArray.add(appt);
         }
+    }
+    //Store to DB as UTC
+    public static LocalDateTime toUTC(LocalDateTime localDateTime){
+        //convert to zoned to allow conversion to instant
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+        Instant instantDateTime = zonedDateTime.toInstant();
+        LocalDateTime UTCDateTime = instantDateTime.atZone(ZoneId.of("UTC")).toLocalDateTime();
+
+        return UTCDateTime;
+    }
+    //return as local time based on current system timezone
+    public static LocalDateTime toLocalDateTime(LocalDateTime UTCDateTime){
+        ZonedDateTime zonedDateTime = UTCDateTime.atZone(ZoneId.of("UTC"));
+        Instant instantDateTime = zonedDateTime.toInstant();
+        LocalDateTime localDateTime = instantDateTime.atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        return localDateTime;
+    }
+    /*Array Methods*/
+    public static ArrayList<Appointment> getAppointments() {
+        return appointmentArray;
+    }
+    public static void sortAppointments() {
+        //sorts array from earliest to latest
+        Collections.sort(appointmentArray, (Appointment appt1, Appointment appt2) -> appt1.getStart().compareTo(appt2.getStart()));
     }
 }

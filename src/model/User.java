@@ -1,23 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import controller.LoginViewController;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-/**
- *
- * @author owner
- */
-
 public class User {
+    
+    /*Static Variables*/
+    private static int userIdCounter = 0;
+    public static ArrayList<User> userArray = new ArrayList<>();
+    /*Instance Variables*/
     private int userId;
     private String userName;
     private String password;
@@ -27,46 +21,41 @@ public class User {
     private LocalDateTime lastUpdate;
     private User lastUpdatedBy;
 
-    public static int userIdCounter = 0;
-    public static ArrayList<User> userArray = new ArrayList<>();
-
-    
+    /*Constructor*/
     public User() throws SQLException{
-        this("","",false,null,null,null,null);
+        this("","",true);
     }
-    
-    public User(String userName, String password, boolean active, User createdBy, LocalDateTime createdDate, LocalDateTime lastUpdate, User lastUpdatedBy) throws SQLException {
+    public User(String userName, String password, boolean active) throws SQLException {
         getMaxUserId();
+        
         this.userId = userIdCounter + 1;
         this.userName = userName;
         this.password = password;
         this.active = active;
-        this.createdBy = createdBy;
-        this.createdDate = createdDate;
-        this.lastUpdate = lastUpdate;
-        this.lastUpdatedBy = lastUpdatedBy;
-        addUserToArray(this);
+
         this.addToDB();
     }
-    
-
-    public int getUserId() {
-        return userId;
+    public User(int userId, String userName, String password, boolean active) throws SQLException {
         
+        this.userId = userId;
+        this.userName = userName;
+        this.password = password;
+        this.active = active;
     }
-
+    /*User ID*/
+    public int getUserId() {
+        return userId;  
+    }
     public void setUserId(int userId) throws SQLException {
         this.userId = userId;
         this.updateDB();
     }
-    public static void getMaxUserId() throws SQLException{
-        
+    public static void getMaxUserId() throws SQLException{  
         String maxQuery = "SELECT MAX(userId) AS userId FROM user";
         ResultSet results = Database.resultQuery(maxQuery);
         while(results.next()){
             //convert to string first to check for null
             String id = results.getString("userId");
-            System.out.println("id test: " + id);
             if (id == null){
                 userIdCounter = -1;
             } else {
@@ -74,91 +63,49 @@ public class User {
             }
         }
     }
-
+    /*Username*/
     public String getUserName() {
         return userName;
     }
-
     public void setUserName(String userName) throws SQLException {
         this.userName = userName;
         this.updateDB();
     }
-
+    /*Password*/
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) throws SQLException {
         this.password = password;
         this.updateDB();
     }
-
+    /*Active*/
     public boolean isActive() {
         return active;
     }
-
     public void setActive(boolean active) {
         this.active = active;
     }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public LocalDateTime getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setLastUpdate(LocalDateTime lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-
-    public User getLastUpdatedBy() {
-        return lastUpdatedBy;
-    }
-
-    public void setLastUpdatedBy(User lastUpdatedBy) {
-        this.lastUpdatedBy = lastUpdatedBy;
-    }
+    /*Array Methods*/
     public void addUserToArray(User user){
         userArray.add(user);
     }
     public static ArrayList<User> getUserArray(){
         return userArray;
     }
+    /*DB Methods*/
     public void addToDB() throws SQLException{
-        /*+ "userId INT(10) PRIMARY KEY NOT NULL,\n"
-                    + "userName VARCHAR(50),\n"
-                    + "password VARCHAR(50),\n"
-                    + "active TINYINT(1),\n"
-                    + "createdBy VARCHAR(40),\n"
-                    + "createDate DATETIME,\n"
-                    + "lastUpdate TIMESTAMP,\n"
-                    + "lastUpdatedBy VARCHAR(50)"
-           */
                  
-        String insert = "INSERT INTO user (userId, userName, password, active, createBy, createDate, lastUpdatedBy)"
-                + " VALUES ("
-                + this.getUserId() + ", "
-                + "'" + this.getUserName() + "', "
-                + "'" + this.getPassword() + "', "
-                + "1, "
-                + "'" + LoginViewController.currentUser + "', "
-                + "CURRENT_TIMESTAMP, "
-                + "'" + LoginViewController.currentUser + "' "
-
+        String insert = 
+                "INSERT INTO user (userId, userName, password, active, createBy, createDate, lastUpdatedBy) "
+                + "VALUES ("
+                    + this.getUserId() + ", "
+                    + "'" + this.getUserName() + "', "
+                    + "'" + this.getPassword() + "', "
+                    + "1, "
+                    + "'" + LoginViewController.currentUser + "', "
+                    + "CURRENT_TIMESTAMP, "
+                    + "'" + LoginViewController.currentUser + "' "
                 + ")";
         
         Database.actionQuery(insert);
@@ -166,17 +113,43 @@ public class User {
     public void updateDB() throws SQLException{
               
         String update =
-            "UPDATE user \n"
+            "UPDATE user "
             + "SET "
                 + "userName = '" + this.getUserName()+ "', "
                 + "password = '" + this.getPassword() + "'"
             + "WHERE "
                 + "userId = " + this.getUserId();
-        System.out.println(
-            "===="
-            + update
-            + "===="
-        );
+        
         Database.actionQuery(update);
+    }
+    public static void populateFromDB() throws SQLException{
+        userArray.clear();
+
+        String userQuery = 
+                "SELECT "
+                    + "userId, "
+                    + "userName, "
+                    + "password, "
+                    + "active "
+                + "FROM user ";
+        
+        ResultSet results = Database.resultQuery(userQuery);
+        
+        Boolean active;
+        while(results.next()){ 
+            int userId = results.getInt("userId"); 
+            String userName = results.getString("userName");
+            String password = results.getString("password");
+            int activeInt = results.getInt("active");
+            if (activeInt == 0){
+                active = true;
+            } else {
+                active = false;
+            }
+            
+            User user = new User(userId, userName, password, active);
+            
+            userArray.add(user);
+        }
     }
 }

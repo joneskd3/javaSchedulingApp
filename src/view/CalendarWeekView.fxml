@@ -29,7 +29,7 @@
                <children>
                   <HBox AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#addAppointmentBtn" prefHeight="26.0" prefWidth="144.0" styleClass="saveBtn" stylesheets="@stylesheet.css" text="Add Appointment" textFill="WHITE">
+                        <Button mnemonicParsing="false" onAction="#addAppointmentBtn" prefHeight="26.0" prefWidth="160.0" styleClass="saveBtn" stylesheets="@stylesheet.css" text="Add Appt / Customer" textFill="WHITE">
                            <HBox.margin>
                               <Insets right="10.0" />
                            </HBox.margin>

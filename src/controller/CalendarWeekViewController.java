@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller;
 
 import java.io.IOException;
@@ -77,14 +72,18 @@ public class CalendarWeekViewController implements Initializable{
     @FXML
     void handleMonthBtn(ActionEvent event) throws IOException {
         MainSchedulingApp.changeScene(event, "/view/CalendarMonthView.fxml", "Calendar - Month View");
-
     }
-    @FXML
-
-    /* Other Methods */
+    /* INITIALIZE */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        addVBox();
+        addVBoxDates();
+        populateDates();
+        populateEvents();
+    }
+    /* Calendar Construction Methods */
     public void addVBox(){
         LocalDate date = main.currentViewDate;
-
         LocalTime time = LocalTime.parse("00:00");
         
         //number of rows and columns
@@ -100,30 +99,15 @@ public class CalendarWeekViewController implements Initializable{
                 timeSlot.getStyleClass().add("timeSlot");
                 final int iTest = i;
                 final int jTest = j;
-                
-                timeSlot.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent e)->{
-                        try {
-                           
-                            addEvent(iTest,jTest);
-                        } catch (IOException ex) {
-                            Logger.getLogger(CalendarMonthViewController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    });
-                
-                
-                
+                                         
                 //adds VBox to array for later access
                 vBoxArray.add(timeSlot);
-                
-                
                 calendarGrid.add(timeSlot,j,i);
+                
                 if(j == 0){
                     timeSlot.getChildren().add(new Label(time.toString()));
                     time = time.plusMinutes(30);
-                
-
-                }
-                
+                }             
             }
         }
     }
@@ -138,9 +122,6 @@ public class CalendarWeekViewController implements Initializable{
             
             dateVBoxArray.add(timeSlot);
             dateHeaderGrid.add(timeSlot,i,1);
-            /*timeSlot.getChildren().add(new Label(date.toString()));
-            date = date.plusDays(1);
-            */
         }
     }
     public void populateDates(){
@@ -183,13 +164,13 @@ public class CalendarWeekViewController implements Initializable{
         monthYearLabel.setText(month + " " + year);
     }
     public void populateEvents(){
-        //ArrayList<Appointment> calendar = Appointment.getAppointments();
         
         for(Appointment appointment : Appointment.getAppointments() ){
             LocalDate date = appointment.getStart().toLocalDate();
             int dateInt = date.getDayOfWeek().getValue();
             LocalDate firstDayOfWeek = firstDayOfWeek();
             int firstDayOfWeekInt = firstDayOfWeek().getDayOfWeek().getValue();
+            
             if (dateInt==7){
                 dateInt = 0;
             }
@@ -198,7 +179,6 @@ public class CalendarWeekViewController implements Initializable{
             }
 
             if (date.isAfter(firstDayOfWeek.minusDays(1)) && date.isBefore(firstDayOfWeek.plusDays(7))){
-            
                 int horizontal = dateInt + 1;
                 String labelText = (appointment.getStart().toLocalTime().format(DateTimeFormatter.ofPattern("hh:mm a"))
                     + " - " + appointment.getTitle());
@@ -208,19 +188,16 @@ public class CalendarWeekViewController implements Initializable{
                  eventlbl.setMaxWidth(Double.MAX_VALUE);
 
                     eventlbl.addEventHandler(MouseEvent.MOUSE_PRESSED, (e)->{
-                        try {
-                            try {
-                                editEvent(appointment);
-                            } catch (SQLException ex) {
-                                Logger.getLogger(CalendarWeekViewController.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        } catch (IOException ex) {
-                            Logger.getLogger(CalendarMonthViewController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                    try {
+                        editEvent(appointment);
+                    } catch (IOException ex) {
+                        Logger.getLogger(CalendarWeekViewController.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(CalendarWeekViewController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     });
 
                 int vertical = (appointment.getStart().getHour()*2) + (appointment.getStart().getMinute()/30);
-               
                 int vHPosition = horizontal + (vertical*8);
                 
                 vBoxArray.get(vHPosition).getChildren().add(eventlbl);
@@ -237,14 +214,7 @@ public class CalendarWeekViewController implements Initializable{
         LocalDate firstDayOfWeek = date.minusDays(curDayOfWeek);
         return firstDayOfWeek;
     }
-    /* INITIALIZE */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-       addVBox();
-       addVBoxDates();
-       populateDates();
-       populateEvents();
-    }
+    /*Appointment Manipulation Methods*/
     public void editEvent(Appointment appointments) throws IOException, SQLException{        
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -272,10 +242,7 @@ public class CalendarWeekViewController implements Initializable{
         label = (Label)vBoxArray.get((row-1)*8).getChildren().get(0);
         String labelTime = label.getText();
 
-        
         LocalTime time = LocalTime.parse(labelTime+":00");
-
-        //LocalDate sendDate = main.currentViewDate.withDayOfMonth(dayInt);
         
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -286,14 +253,11 @@ public class CalendarWeekViewController implements Initializable{
         loader.setLocation(MainSchedulingApp.class.getResource("/view/AppointmentView.fxml"));
         Parent root = (Parent) loader.load();
         main = new Scene(root);
-        System.out.println(root);
         AppointmentViewController controller = loader.getController();
         controller.addAppt(date, time);
         stage.setScene(main);
         stage.showAndWait();  
-        refreshCalendar();
-       
-         
+        refreshCalendar();    
     }
     public void refreshCalendar(){
         clearCalendar();

@@ -60,7 +60,7 @@
                   <Insets top="20.0" />
                </GridPane.margin>
             </Button>
-            <Button fx:id="deleteBtn" alignment="TOP_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDelete" prefHeight="20.0" prefWidth="170.0" styleClass="deleteBtn" text="Remove Customer" textFill="#ff0404" GridPane.columnIndex="4">
+            <Button fx:id="deleteBtn" alignment="TOP_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDelete" prefHeight="20.0" prefWidth="170.0" styleClass="deleteBtn" text="Deactivate" textFill="#ff0404" visible="false" GridPane.columnIndex="4">
                <font>
                   <Font size="14.0" />
                </font>
